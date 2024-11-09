@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "./LotteryStructs.sol";  // Importing LotteryStructs.sol
 
 contract TicketToken is ERC20 {
     address public owner;
@@ -17,31 +18,15 @@ contract TicketToken is ERC20 {
 }
 
 contract CompanyLottery {
-    struct Lottery {
-        uint unixbeg;
-        uint nooftickets;
-        uint noofwinners;
-        uint minpercentage;
-        uint ticketprice;
-        bytes32 htmlhash;
-        string url;
-        uint soldTickets;
-        bool isActive;
-        address paymentToken;
-    }
-
-    struct Ticket {
-        address participant;
-        uint quantity;
-        bytes32 hash_rnd_number; // Committed hash of random number
-        bool revealed;
-    }
+    using LotteryStructs for LotteryStructs.LotteryInfo; // Using the LotteryInfo struct
+    using LotteryStructs for LotteryStructs.TicketInfo; // Using the TicketInfo struct
+    using LotteryStructs for LotteryStructs.LotteryState; // Using the LotteryState enum
 
     TicketToken public ticketToken;
     address public owner;
     uint public currentLotteryNo;
-    mapping(uint => Lottery) public lotteries;
-    mapping(uint => Ticket[]) public lotteryTickets; // List of tickets per lottery
+    mapping(uint => LotteryStructs.LotteryInfo) public lotteries; // Mapping of lottery IDs to LotteryInfo
+    mapping(uint => LotteryStructs.TicketInfo[]) public lotteryTickets; // Mapping of lottery IDs to an array of TicketInfo structs
     mapping(uint => mapping(uint => uint)) public ticketPurchaseQuantities;
 
     event LotteryCreated(uint lotteryNo, uint unixbeg, uint nooftickets);
@@ -72,7 +57,7 @@ contract CompanyLottery {
         require(minpercentage <= 100, "Min participation cannot exceed 100");
 
         currentLotteryNo++;
-        lotteries[currentLotteryNo] = Lottery({
+        lotteries[currentLotteryNo] = LotteryStructs.LotteryInfo({
             unixbeg: unixbeg,
             nooftickets: nooftickets,
             noofwinners: noofwinners,
@@ -81,7 +66,7 @@ contract CompanyLottery {
             htmlhash: htmlhash,
             url: url,
             soldTickets: 0,
-            isActive: true,
+            state: LotteryStructs.LotteryState.ACTIVE,  // Lottery state is ACTIVE when created
             paymentToken: address(ticketToken)
         });
 
@@ -90,14 +75,14 @@ contract CompanyLottery {
     }
 
     function buyTicketTx(uint quantity, bytes32 hash_rnd_number) public returns (uint sticketno) {
-        require(lotteries[currentLotteryNo].isActive, "Lottery is not active");
+        require(lotteries[currentLotteryNo].state == LotteryStructs.LotteryState.ACTIVE, "Lottery is not active");
         require(block.timestamp < lotteries[currentLotteryNo].unixbeg, "Lottery has ended");
         require(lotteries[currentLotteryNo].soldTickets + quantity <= lotteries[currentLotteryNo].nooftickets, "Not enough tickets available");
 
         uint totalCost = quantity * lotteries[currentLotteryNo].ticketprice;
         ticketToken.transferFrom(msg.sender, owner, totalCost);
 
-        Ticket memory ticket = Ticket({
+        LotteryStructs.TicketInfo memory ticket = LotteryStructs.TicketInfo({
             participant: msg.sender,
             quantity: quantity,
             hash_rnd_number: hash_rnd_number,
@@ -113,7 +98,7 @@ contract CompanyLottery {
 
     function revealRndNumberTx(uint sticketno, uint quantity, uint rnd_number) public {
         require(sticketno < lotteryTickets[currentLotteryNo].length, "Ticket does not exist");
-        Ticket storage ticket = lotteryTickets[currentLotteryNo][sticketno];
+        LotteryStructs.TicketInfo storage ticket = lotteryTickets[currentLotteryNo][sticketno];
         require(ticket.participant == msg.sender, "Not the ticket owner");
         require(ticket.quantity == quantity, "Quantity mismatch");
         require(!ticket.revealed, "Random number already revealed");
@@ -131,7 +116,7 @@ contract CompanyLottery {
 
     function getIthPurchasedTicketTx(uint i, uint lotteryNo) public view returns (uint sticketno, uint quantity, address participant) {
         require(i < lotteryTickets[lotteryNo].length, "Index out of range");
-        Ticket storage ticket = lotteryTickets[lotteryNo][i];
+        LotteryStructs.TicketInfo storage ticket = lotteryTickets[lotteryNo][i];
         return (i, ticket.quantity, ticket.participant);
     }
 
@@ -175,12 +160,12 @@ contract CompanyLottery {
         uint minpercentage,
         uint ticketprice
     ) {
-        Lottery storage lottery = lotteries[lotteryNo];
+        LotteryStructs.LotteryInfo storage lottery = lotteries[lotteryNo];
         return (lottery.unixbeg, lottery.nooftickets, lottery.noofwinners, lottery.minpercentage, lottery.ticketprice);
     }
 
     function getLotteryURL(uint lotteryNo) public view returns (bytes32 htmlhash, string memory url) {
-        Lottery storage lottery = lotteries[lotteryNo];
+        LotteryStructs.LotteryInfo storage lottery = lotteries[lotteryNo];
         return (lottery.htmlhash, lottery.url);
     }
 
