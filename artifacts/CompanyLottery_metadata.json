@@ -1,0 +1,749 @@
+{
+	"compiler": {
+		"version": "0.8.26+commit.8a97fa7a"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_ticketTokenAddress",
+						"type": "address"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "lotteryNo",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "unixbeg",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "nooftickets",
+						"type": "uint256"
+					}
+				],
+				"name": "LotteryCreated",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "lotteryNo",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "ticketNo",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "rnd_number",
+						"type": "uint256"
+					}
+				],
+				"name": "RandomNumberRevealed",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "lotteryNo",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "ticketNo",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "quantity",
+						"type": "uint256"
+					}
+				],
+				"name": "TicketPurchased",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "lotteryNo",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "winningTicketNo",
+						"type": "uint256"
+					}
+				],
+				"name": "WinnerDeclared",
+				"type": "event"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "quantity",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "hash_rnd_number",
+						"type": "bytes32"
+					}
+				],
+				"name": "buyTicketTx",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "sticketno",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "addr",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "lotteryNo",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "ticketNo",
+						"type": "uint256"
+					}
+				],
+				"name": "checkIfAddrTicketWon",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "won",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "lotteryNo",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "ticketNo",
+						"type": "uint256"
+					}
+				],
+				"name": "checkIfMyTicketWon",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "won",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "unixbeg",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "nooftickets",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "noofwinners",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "minpercentage",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "ticketprice",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "htmlhash",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "string",
+						"name": "url",
+						"type": "string"
+					}
+				],
+				"name": "createLottery",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "lotteryNo",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "currentLotteryNo",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getCurrentLotteryNo",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "lotteryNo",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "i",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "lotteryNo",
+						"type": "uint256"
+					}
+				],
+				"name": "getIthPurchasedTicketTx",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "sticketno",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "quantity",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "participant",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "lotteryNo",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "i",
+						"type": "uint256"
+					}
+				],
+				"name": "getIthWinningTicket",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "ticketNo",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "lotteryNo",
+						"type": "uint256"
+					}
+				],
+				"name": "getLotteryInfo",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "unixbeg",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "nooftickets",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "noofwinners",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "minpercentage",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "ticketprice",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "lotteryNo",
+						"type": "uint256"
+					}
+				],
+				"name": "getLotterySales",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "numsold",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "lotteryNo",
+						"type": "uint256"
+					}
+				],
+				"name": "getLotteryURL",
+				"outputs": [
+					{
+						"internalType": "bytes32",
+						"name": "htmlhash",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "string",
+						"name": "url",
+						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "lotteryNo",
+						"type": "uint256"
+					}
+				],
+				"name": "getNumPurchaseTxs",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "numpurchasetxs",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "lotteryNo",
+						"type": "uint256"
+					}
+				],
+				"name": "getPaymentToken",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "ercTokenAddr",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "lotteries",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "unixbeg",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "nooftickets",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "noofwinners",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "minpercentage",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "ticketprice",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "soldTickets",
+						"type": "uint256"
+					},
+					{
+						"internalType": "enum LotteryStructs.LotteryState",
+						"name": "state",
+						"type": "uint8"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "htmlhash",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "string",
+						"name": "url",
+						"type": "string"
+					},
+					{
+						"internalType": "address",
+						"name": "paymentToken",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "lotteryTickets",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "participant",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "quantity",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "hash_rnd_number",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "bool",
+						"name": "revealed",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "owner",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "sticketno",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "quantity",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "rnd_number",
+						"type": "uint256"
+					}
+				],
+				"name": "revealRndNumberTx",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "ercTokenAddr",
+						"type": "address"
+					}
+				],
+				"name": "setPaymentToken",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "ticketPurchaseQuantities",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "ticketToken",
+				"outputs": [
+					{
+						"internalType": "contract TicketToken",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "lotteryNo",
+						"type": "uint256"
+					}
+				],
+				"name": "withdrawTicketProceeds",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "lotteryNo",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "sticketNo",
+						"type": "uint256"
+					}
+				],
+				"name": "withdrawTicketRefund",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"CompanyLotteries.sol": "CompanyLottery"
+		},
+		"evmVersion": "cancun",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"@openzeppelin/contracts/interfaces/draft-IERC6093.sol": {
+			"keccak256": "0x880da465c203cec76b10d72dbd87c80f387df4102274f23eea1f9c9b0918792b",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://399594cd8bb0143bc9e55e0f1d071d0d8c850a394fb7a319d50edd55d9ed822b",
+				"dweb:/ipfs/QmbPZzgtT6LEm9CMqWfagQFwETbV1ztpECBB1DtQHrKiRz"
+			]
+		},
+		"@openzeppelin/contracts/token/ERC20/ERC20.sol": {
+			"keccak256": "0xbf61ab2ae1d575a17ea58fbb99ca232baddcc4e0eeea180e84cbc74b0c348b31",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://4e0968705bad99747a8e5288aa008678c2be2f471f919dce3925a3cc4f1dee09",
+				"dweb:/ipfs/QmbAFnCQfo4tw6ssfQSjhA5LzwHWNNryXN8bX7ty8jiqqn"
+			]
+		},
+		"@openzeppelin/contracts/token/ERC20/IERC20.sol": {
+			"keccak256": "0xe06a3f08a987af6ad2e1c1e774405d4fe08f1694b67517438b467cecf0da0ef7",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://df6f0c459663c9858b6cba2cda1d14a7d05a985bed6d2de72bd8e78c25ee79db",
+				"dweb:/ipfs/QmeTTxZ7qVk9rjEv2R4CpCwdf8UMCcRqDNMvzNxHc3Fnn9"
+			]
+		},
+		"@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol": {
+			"keccak256": "0x70f2f713b13b7ce4610bcd0ac9fec0f3cc43693b043abcb8dc40a42a726eb330",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://c13d13304ac79a83ab1c30168967d19e2203342ebbd6a9bbce4db7550522dcbf",
+				"dweb:/ipfs/QmeN5jKMN2vw5bhacr6tkg78afbTTZUeaacNHqjWt4Ew1r"
+			]
+		},
+		"@openzeppelin/contracts/utils/Context.sol": {
+			"keccak256": "0x493033a8d1b176a037b2cc6a04dad01a5c157722049bbecf632ca876224dd4b2",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://6a708e8a5bdb1011c2c381c9a5cfd8a9a956d7d0a9dc1bd8bcdaf52f76ef2f12",
+				"dweb:/ipfs/Qmax9WHBnVsZP46ZxEMNRQpLQnrdE4dK8LehML1Py8FowF"
+			]
+		},
+		"CompanyLotteries.sol": {
+			"keccak256": "0xd826a8adc4ee1cd603c9366a681a8339b90ef94f98cdce57bd798abf283e84c3",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://e89a635219f4ac33f0851d63be825cbc501056029a1a7f4e079ef876ca461012",
+				"dweb:/ipfs/QmXzLKP3iGbtYs9NRanyG7WaLTbgJbNEkYjaov4uNwPSdj"
+			]
+		},
+		"LotteryStructs.sol": {
+			"keccak256": "0x4195af8525602cc040d1860fa8038a1d94c50e918fc304a812ad62204b9b1017",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://03f3f0db06747c08fae8849e9966fcaf6a3d6e30ada30b0259f2c403a9e5471e",
+				"dweb:/ipfs/QmSbxR7NwAACaRVAmTgcg4AtkcyFVk9DaSX7dH7uHYAQ6m"
+			]
+		}
+	},
+	"version": 1
+}
