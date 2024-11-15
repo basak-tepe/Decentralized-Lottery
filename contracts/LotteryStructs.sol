@@ -30,6 +30,7 @@ library LotteryStructs {
         uint ticketPrice;       // Price of each ticket (in the NBG Token)
         uint32 soldTickets;     // Number of tickets sold
         LotteryState state;     // Current state of the lottery
+        uint32 transactions;
         //bytes32 htmlhash;       // Hash of the lottery details page (will be used for off-chain data verification)
         //string url;             // URL of the lottery details page (when needed)
         address paymentToken;   // Address of the NBG Token contract used for payments

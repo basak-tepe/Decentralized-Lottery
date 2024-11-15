@@ -97,6 +97,7 @@ contract NBGLottery {
             //htmlhash: htmlhash,
             //url: url,
             soldTickets: 0,
+            transactions:0,
             state: LotteryStructs.LotteryState.ACTIVE,
             paymentToken: address(ticketToken)
         });
@@ -134,6 +135,7 @@ contract NBGLottery {
         sTicketNo = lotteryTickets[currentLotteryNo].length - 1;
 
         lotteries[currentLotteryNo].soldTickets += quantity;
+        lotteries[currentLotteryNo].transactions += 1;
 
         // Log ticket purchased
         emit TicketPurchased(currentLotteryNo, sTicketNo, quantity);
@@ -179,22 +181,55 @@ contract NBGLottery {
     }
 
     /*
+        Retrieves the number of purchase Transactions a specific lottery.
+        @param lotteryNo Lottery ID which is used to retrieve information about its transactions.
+        @return soldTickets Number of purchased tickets in that particular lottery
+        TODO: Transaction için yeni parametre ekledim, bunu sor.
+    */
+    function getNumPurchaseTxs(uint32 lottery_no) public view returns (uint32 transactions){
+       return lotteries[lottery_no].transactions;
+    }
+
+     /*
+        Returns the current lottery number of the contract.
+        @param None
+        @return currentLotteryNo Current Lottery number in the contract.
+    */
+     function getCurrentLotteryNo() public view returns (uint32 lotteryNo) {
+        return currentLotteryNo;
+    }
+
+    
+      /*
+        Retrieves the number of ticket sold for a specific lottery.
+        @param lotteryNo Lottery ID which is used to retrieve information about its state and sold tickets
+        @return soldTickets Number of purchased tickets in that particular lottery
+        */
+        
+    function getLotterySales(uint32 lotteryNo) public view returns (uint32 soldTickets) {
+        return lotteries[lotteryNo].soldTickets;
+    }
+
+    
+
+    
+    /*
     createLottery - MGE - implementing
     buyTicketTx - MGE - implementing
-    function revealRndNumberTx(uint sticketno, quantity, uint rnd_number) public
-    function getNumPurchaseTxs(uint lottery_no) public view returns(uint numpurchasetxs)
+    function revealRndNumberTx(uint sticketno, quantity, uint rnd_number) public - Nurhan
+    getNumPurchaseTxs - Başak - implemented
     getIthPurchasedTicketTx - MGE - implementing
-    function checkIfMyTicketWon(uint lottery_no, uint ticket_no) public view returns (bool won)
-    function checkIfAddrTicketWon(address addr, uint lottery_no, uint ticket_no) public view returns (bool won)
-     function getIthWinningTicket(uint lottery_no,uint i) public view returns (uint ticketno)
-    function withdrawTicketRefund(uint lottery_no, uint sticket_no) public
-    function getCurrentLotteryNo() public view returns (uint lottery_no)
-     function withdrawTicketProceeds(uint lottery_no) public onlyOwner
-    function setPaymentToken(address erctokenaddr) public onlyOwner
-    function getPaymentToken(uint lottery_no) public returns (address erctokenaddr)
+    function checkIfMyTicketWon(uint lottery_no, uint ticket_no) public view returns (bool won) - Nurhan
+    checkIfAddrTicketWon - Başak - implementing
+    function getIthWinningTicket(uint lottery_no,uint i) public view returns (uint ticketno) 
+    function withdrawTicketRefund(uint lottery_no, uint sticket_no) public - Nurhan
+    getCurrentLotteryNo - Başak - implemented
+    function withdrawTicketProceeds(uint lottery_no) public onlyOwner
+    function setPaymentToken(address erctokenaddr) public onlyOwner - Nurhan 
+    function getPaymentToken - Başak - implementing
      getLotteryInfo - MGE - implementing
-    function getLotteryURL(uint lottery_no) public returns(bytes32 htmlhash, string url)
-     function getLotterySales(uint lottery_no) public (uint numsold)
+    function getLotteryURL(uint lottery_no) public returns(bytes32 htmlhash, string url) - Nurhan
+     function getLotterySales - Başak - implemented
     */
 
 }
