@@ -13,7 +13,7 @@ contract CommitmentScheme {
     // @param value: ...
     // @param nonce: ...
     // @returns hash value calculated with the given parameters
-    function createCommitmentHash(string memory value, uint256 nonce) private pure returns (bytes32) {
+    function createCommitmentHash(string memory value, uint256 nonce) public pure returns (bytes32) {
         // Use keccak256 with abi.encodePacked to generate the commitment hash
         return keccak256(abi.encodePacked(value, nonce));
     }
