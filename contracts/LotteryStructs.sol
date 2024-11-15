@@ -24,11 +24,11 @@ library LotteryStructs {
      */
     struct LotteryInfo {
         uint unixbeg;           // Start time of the lottery (in Unix timestamp)
-        uint nooftickets;       // Total number of tickets in the lottery
+        uint32 nooftickets;     // Total number of tickets in the lottery
         uint noofwinners;       // Number of winners to be selected
-        uint minpercentage;     // Minimum percentage of tickets to be sold for the lottery to be valid
+        uint16 minpercentage;   // Minimum percentage of tickets to be sold for the lottery to be valid
         uint ticketprice;       // Price of each ticket (in the NBG Token)
-        uint soldTickets;       // Number of tickets sold
+        uint32 soldTickets;     // Number of tickets sold
         LotteryState state;     // Current state of the lottery
         bytes32 htmlhash;       // Hash of the lottery details page (will be used for off-chain data verification)
         string url;             // URL of the lottery details page (when needed)
@@ -40,7 +40,7 @@ library LotteryStructs {
      */
     struct TicketInfo {
         address participant;        // Address of the user who purchased the ticket(s)
-        uint quantity;              // Number of tickets purchased in this transaction
+        uint8 quantity;             // Number of tickets purchased in this transaction - Max 30 can be sold
         bytes32 hash_rnd_number;    // Commitment hash of a random number (used for fair lottery mechanics)
         bool revealed;              // Indicates if the participant has revealed their random number
     }
