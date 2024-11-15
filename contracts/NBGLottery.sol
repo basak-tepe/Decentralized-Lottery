@@ -139,23 +139,42 @@ contract NBGLottery {
         emit TicketPurchased(currentLotteryNo, sTicketNo, quantity);
     }
 
+    // Getter functions
+    /*
+        View function to get information of a ticket.
+        Allows anyone to view the quantity of tickets purchased in the Ith transaction for a specified lottery
+        @param i Ticket index number (starts with 1 as first)
+        @param lotteryNo lottery number which the ticket is in
+        @return sTicketNo Sold ticket no
+        @return quantity Quantity of tickets sold
+    */
+    function getIthPurchasedTicketTx(uint32 i, uint lotteryNo) public view returns (uint32 sTicketNo, uint8 quantity) {
+        // Decrement i by 1 to match the array index
+        i = i-1;
+        // Check if the number of ticket is more than total ticket sold
+        require(i < lotteryTickets[lotteryNo].length, "Index out of range");
+        // Create a reference to a specific TicketInfo struct stored in the contract’s state
+        LotteryStructs.TicketInfo storage ticket = lotteryTickets[lotteryNo][i];
+        return (i, ticket.quantity);
+    }
+
     /*
     createLottery - MGE - implementing
     buyTicketTx - MGE - implementing
     function revealRndNumberTx(uint sticketno, quantity, uint rnd_number) public
     function getNumPurchaseTxs(uint lottery_no) public view returns(uint numpurchasetxs)
-    function getIthPurchasedTicketTx(uint i,uint lottery_no) public view returns(uint sticketno, uint quantity)
+    getIthPurchasedTicketTx - MGE - implementing
     function checkIfMyTicketWon(uint lottery_no, uint ticket_no) public view returns (bool won)
     function checkIfAddrTicketWon(address addr, uint lottery_no, uint ticket_no) public view returns (bool won)
-    function getIthWinningTicket(uint lottery_no,uint i) public view returns (uint ticketno)
+     function getIthWinningTicket(uint lottery_no,uint i) public view returns (uint ticketno)
     function withdrawTicketRefund(uint lottery_no, uint sticket_no) public
     function getCurrentLotteryNo() public view returns (uint lottery_no)
-    function withdrawTicketProceeds(uint lottery_no) public onlyOwner
+     function withdrawTicketProceeds(uint lottery_no) public onlyOwner
     function setPaymentToken(address erctokenaddr) public onlyOwner
     function getPaymentToken(uint lottery_no) public returns (address erctokenaddr)
-    function getLotteryInfo(uint lottery_no) public returns (uint unixbeg, uint nooftickets, noofwinners, uint minpercentage, uint ticketprice)
+     function getLotteryInfo(uint lottery_no) public returns (uint unixbeg, uint nooftickets, noofwinners, uint minpercentage, uint ticketprice)
     function getLotteryURL(uint lottery_no) public returns(bytes32 htmlhash, string url)
-    function getLotterySales(uint lottery_no) public (uint numsold)
+     function getLotterySales(uint lottery_no) public (uint numsold)
     */
 
 }
