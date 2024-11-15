@@ -140,7 +140,7 @@ contract NBGLottery {
     }
 
     /*
-    function createLottery(uint unixbeg, uint nooftickets, noofwinners, uint minpercentage, uint ticketprice, bytes32 htmlhash, string url) public onlyOwner returns(uint lottery_no)
+    createLottery - MGE - implementing
     buyTicketTx - MGE - implementing
     function revealRndNumberTx(uint sticketno, quantity, uint rnd_number) public
     function getNumPurchaseTxs(uint lottery_no) public view returns(uint numpurchasetxs)
