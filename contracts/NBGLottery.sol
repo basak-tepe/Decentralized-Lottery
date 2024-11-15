@@ -148,7 +148,7 @@ contract NBGLottery {
         @return sTicketNo Sold ticket no
         @return quantity Quantity of tickets sold
     */
-    function getIthPurchasedTicketTx(uint32 i, uint lotteryNo) public view returns (uint32 sTicketNo, uint8 quantity) {
+    function getIthPurchasedTicketTx(uint32 i, uint32 lotteryNo) public view returns (uint32 sTicketNo, uint8 quantity) {
         // Decrement i by 1 to match the array index
         i = i-1;
         // Check if the number of ticket is more than total ticket sold
@@ -156,6 +156,26 @@ contract NBGLottery {
         // Create a reference to a specific TicketInfo struct stored in the contract’s state
         LotteryStructs.TicketInfo storage ticket = lotteryTickets[lotteryNo][i];
         return (i, ticket.quantity);
+    }
+
+    /*
+        Retrieves the essential information about a specific lottery based on its unique lottery ID
+        @param unixbeg Start time of the lottery (in Unix timestamp)
+        @param noOfTickets Total number of tickets in the lottery
+        @param noOfWinners Number of winners to be selected
+        @param minPercentage Minimum percentage of tickets to be sold for the lottery to be valid
+        @param ticketPrice Price of each ticket (in the NBG Token)
+    */
+    function getLotteryInfo(uint32 lotteryNo) public view returns (
+        uint unixbeg,
+        uint noOfTickets,
+        uint noOfWinners,
+        uint minPercentage,
+        uint ticketPrice
+    ) {
+        // Access the LotteryInfo struct for the specified lottery number
+        LotteryStructs.LotteryInfo storage lottery = lotteries[lotteryNo];
+        return (lottery.unixbeg, lottery.noOfTickets, lottery.noOfWinners, lottery.minPercentage, lottery.ticketPrice);
     }
 
     /*
@@ -172,7 +192,7 @@ contract NBGLottery {
      function withdrawTicketProceeds(uint lottery_no) public onlyOwner
     function setPaymentToken(address erctokenaddr) public onlyOwner
     function getPaymentToken(uint lottery_no) public returns (address erctokenaddr)
-     function getLotteryInfo(uint lottery_no) public returns (uint unixbeg, uint nooftickets, noofwinners, uint minpercentage, uint ticketprice)
+     getLotteryInfo - MGE - implementing
     function getLotteryURL(uint lottery_no) public returns(bytes32 htmlhash, string url)
      function getLotterySales(uint lottery_no) public (uint numsold)
     */
