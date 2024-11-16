@@ -46,8 +46,8 @@ contract NBGLottery {
     // TODO tek bir lottery olacağı için map yerine array kullanılabilir ??
     mapping(uint => LotteryStructs.TicketInfo[]) public lotteryTickets; // Mapping of lottery IDs to an array of TicketInfo structs
 
-    event LotteryCreated(uint lotteryNo, uint unixbeg, uint nooftickets); // Track created lotteries
-    event TicketPurchased(uint lotteryNo, uint ticketNo, uint8 quantity); // Track purchased tickets
+    event LotteryCreated(uint lottery_no, uint unixbeg, uint nooftickets); // Track created lotteries
+    event TicketPurchased(uint lottery_no, uint ticketNo, uint8 quantity); // Track purchased tickets
 
     /*
         Sets the owner and initializes TicketToken contract.
@@ -97,9 +97,9 @@ contract NBGLottery {
             htmlhash: htmlhash,
             url: url,
             numsold: 0,
-            transactions:0,
+            numpurchasetxs:0,
             state: LotteryStructs.LotteryState.ACTIVE,
-            paymentToken: address(ticketToken)
+            erctokenaddr: address(ticketToken)
         });
 
         emit LotteryCreated(currentLotteryNo, unixbeg, nooftickets);
@@ -135,7 +135,7 @@ contract NBGLottery {
         sticketno = lotteryTickets[currentLotteryNo].length - 1;
 
         lotteries[currentLotteryNo].numsold += quantity;
-        lotteries[currentLotteryNo].transactions += 1;
+        lotteries[currentLotteryNo].numpurchasetxs += 1;
 
         // Log ticket purchased
         emit TicketPurchased(currentLotteryNo, sticketno, quantity);
@@ -146,7 +146,7 @@ contract NBGLottery {
         View function to get information of a ticket.
         Allows anyone to view the quantity of tickets purchased in the Ith transaction for a specified lottery
         @param i Ticket index number (starts with 1 as first)
-        @param lotteryNo lottery number which the ticket is in
+        @param lottery_no lottery number which the ticket is in
         @return sTicketNo Sold ticket no
         @return quantity Quantity of tickets sold
     */
@@ -182,12 +182,12 @@ contract NBGLottery {
 
     /*
         Retrieves the number of purchase Transactions a specific lottery.
-        @param lotteryNo Lottery ID which is used to retrieve information about its transactions.
-        @return soldTickets Number of purchased tickets in that particular lottery
+        @param lottery_no Lottery ID which is used to retrieve information about its transactions.
+        @return numpurchasetxs Number of transactions
         TODO: Transaction için yeni parametre ekledim, bunu sor.
     */
-    function getNumPurchaseTxs(uint lottery_no) public view returns (uint transactions){
-       return lotteries[lottery_no].transactions;
+    function getNumPurchaseTxs(uint lottery_no) public view returns (uint numpurchasetxs){
+       return lotteries[lottery_no].numpurchasetxs;
     }
 
      /*
@@ -195,39 +195,47 @@ contract NBGLottery {
         @param None
         @return currentLotteryNo Current Lottery number in the contract.
     */
-     function getCurrentLotteryNo() public view returns (uint32 lotteryNo) {
+     function getCurrentLotteryNo() public view returns (uint32 lottery_no) {
         return currentLotteryNo;
     }
 
     
       /*
         Retrieves the number of ticket sold for a specific lottery.
-        @param lotteryNo Lottery ID which is used to retrieve information about its state and sold tickets
+        @param lottery_no Lottery ID which is used to retrieve information about its state and sold tickets
         @return soldTickets Number of purchased tickets in that particular lottery
         */
         
-    function getLotterySales(uint lotteryNo) public view returns (uint soldTickets) {
-        return lotteries[lotteryNo].numsold;
+    function getLotterySales(uint lottery_no) public view returns (uint numsold) {
+        return lotteries[lottery_no].numsold;
     }
 
-    
+     /*
+        Retrieves the adress of the payment token for a specific lottery.
+        @param lottery_no Lottery ID which is used to retrieve information about its state and sold tickets
+        @return erctokenaddr Adress of the payment token in that particular lottery
+        Not: ne yaptığını sor? 
+        */
 
-    
+    function getPaymentToken(uint lottery_no) public returns (address erctokenaddr){
+        return lotteries[lottery_no].erctokenaddr;
+    }
+
     /*
-        createLottery - MGE - implemented
-        buyTicketTx - MGE - implementing (total cost)
+     createLottery - MGE - implemented
+    buyTicketTx - MGE - implementing (total cost)
     function revealRndNumberTx(uint sticketno, quantity, uint rnd_number) public - Nurhan
     getNumPurchaseTxs - Başak - implemented
-        getIthPurchasedTicketTx - MGE - implemented
+    getIthPurchasedTicketTx - MGE - implemented
     function checkIfMyTicketWon(uint lottery_no, uint ticket_no) public view returns (bool won) - Nurhan
     checkIfAddrTicketWon - Başak - implementing
-        function getIthWinningTicket(uint lottery_no,uint i) public view returns (uint ticketno) 
+    function getIthWinningTicket(uint lottery_no,uint i) public view returns (uint ticketno) 
     function withdrawTicketRefund(uint lottery_no, uint sticket_no) public - Nurhan
     getCurrentLotteryNo - Başak - implemented
-        function withdrawTicketProceeds(uint lottery_no) public onlyOwner
+    function withdrawTicketProceeds(uint lottery_no) public onlyOwner
     function setPaymentToken(address erctokenaddr) public onlyOwner - Nurhan 
-    function getPaymentToken - Başak - implementing
-        getLotteryInfo - MGE - implemented
+    function getPaymentToken - Başak - implemented
+    getLotteryInfo - MGE - implemented
     function getLotteryURL(uint lottery_no) public returns(bytes32 htmlhash, string url) - Nurhan
      function getLotterySales - Başak - implemented
     */
