@@ -90,13 +90,13 @@ contract NBGLottery {
         currentLotteryNo++;
         lotteries[currentLotteryNo] = LotteryStructs.LotteryInfo({
             unixbeg: unixbeg,
-            noOfTickets: nooftickets,
-            noOfWinners: noofwinners,
-            minPercentage: minpercentage,
-            ticketPrice: ticketprice,
+            nooftickets: nooftickets,
+            noofwinners: noofwinners,
+            minpercentage: minpercentage,
+            ticketprice: ticketprice,
             htmlhash: htmlhash,
             url: url,
-            soldTickets: 0,
+            numsold: 0,
             transactions:0,
             state: LotteryStructs.LotteryState.ACTIVE,
             paymentToken: address(ticketToken)
@@ -117,10 +117,10 @@ contract NBGLottery {
         // Check if the lottery is active, lottery is finished, and are there enough tickets to sold
         require(lotteries[currentLotteryNo].state == LotteryStructs.LotteryState.ACTIVE, "Lottery is not active");
         require(block.timestamp < lotteries[currentLotteryNo].unixbeg, "Lottery has ended");
-        require(lotteries[currentLotteryNo].soldTickets + quantity <= lotteries[currentLotteryNo].noOfTickets, "Not enough tickets available");
+        require(lotteries[currentLotteryNo].numsold + quantity <= lotteries[currentLotteryNo].nooftickets, "Not enough tickets available");
 
         // Calculate total cost
-        uint totalCost = quantity * lotteries[currentLotteryNo].ticketPrice;
+        uint totalCost = quantity * lotteries[currentLotteryNo].ticketprice;
         // ticketToken.transferFrom(msg.sender, owner, totalCost);
 
         // Construct a ticket with the info provided
@@ -134,7 +134,7 @@ contract NBGLottery {
         lotteryTickets[currentLotteryNo].push(ticket);
         sticketno = lotteryTickets[currentLotteryNo].length - 1;
 
-        lotteries[currentLotteryNo].soldTickets += quantity;
+        lotteries[currentLotteryNo].numsold += quantity;
         lotteries[currentLotteryNo].transactions += 1;
 
         // Log ticket purchased
@@ -177,7 +177,7 @@ contract NBGLottery {
     ) {
         // Access the LotteryInfo struct for the specified lottery number
         LotteryStructs.LotteryInfo storage lottery = lotteries[lottery_no];
-        return (lottery.unixbeg, lottery.noOfTickets, lottery.noOfWinners, lottery.minPercentage, lottery.ticketPrice);
+        return (lottery.unixbeg, lottery.nooftickets, lottery.noofwinners, lottery.minpercentage, lottery.ticketprice);
     }
 
     /*
@@ -207,7 +207,7 @@ contract NBGLottery {
         */
         
     function getLotterySales(uint lotteryNo) public view returns (uint soldTickets) {
-        return lotteries[lotteryNo].soldTickets;
+        return lotteries[lotteryNo].numsold;
     }
 
     
