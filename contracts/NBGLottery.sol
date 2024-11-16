@@ -5,6 +5,14 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "./LotteryStructs.sol";
 
 /*
+*Mapleri nasıl yaparız?
+* random N + adress -> hash
+* hash  ile ticket_no mapping mi? -> bunun çözümü zor
+* adress ile ticket_no mapping mi? ** şuan bunu yaptım
+* 
+*/
+
+/*
     Custom ERC20 token for the lottery system.
 */
 contract TicketToken is ERC20 {
@@ -40,6 +48,19 @@ contract NBGLottery {
     TicketToken public ticketToken;
     address public owner;
     uint32 public currentLotteryNo;
+
+    // Mapping from user address to their ticket number list for each lottery.
+    /*
+        addressToTickets = {
+        0xABC123...: {    // Address of User A
+            1: [100, 101, 102]  // Lottery 1, Tickets 100, 101, 102
+        }
+    }*/
+
+    mapping(address => mapping(uint => uint[])) public addressToTickets;
+    // Mapping from lottery number to an array of winning ticket numbers
+    mapping(uint => uint[]) public lotteryWinners;
+
 
     mapping(uint => LotteryStructs.LotteryInfo) public lotteries; // Mapping of lottery IDs to LotteryInfo
 
@@ -82,11 +103,11 @@ contract NBGLottery {
         uint minpercentage,
         uint ticketprice,
         bytes32 htmlhash,
+        uint currentticketno,
         string memory url
     ) public onlyOwner returns (uint lottery_no) {
         require(noofwinners > 0, "At least one winner required");
         //require(minpercentage <= 100, "Min participation cannot exceed 100");
-
         currentLotteryNo++;
         lotteries[currentLotteryNo] = LotteryStructs.LotteryInfo({
             unixbeg: unixbeg,
@@ -95,6 +116,7 @@ contract NBGLottery {
             minpercentage: minpercentage,
             ticketprice: ticketprice,
             htmlhash: htmlhash,
+            currentticketno: currentticketno,
             url: url,
             numsold: 0,
             numpurchasetxs:0,
@@ -135,6 +157,15 @@ contract NBGLottery {
         sticketno = lotteryTickets[currentLotteryNo].length - 1;
 
         lotteries[currentLotteryNo].numsold += quantity;
+         // Add tickets to user's list in addressToTickets mapping
+        for (uint8 i = 0; i < quantity; i++) {
+            uint Currentticketno = lotteries[currentLotteryNo].currentticketno;
+            Currentticketno +=1;
+            lotteries[currentLotteryNo].currentticketno = Currentticketno;
+            addressToTickets[msg.sender][currentLotteryNo].push(Currentticketno); // Add consecutive ticket numbers
+        }
+
+        //update purchase transactions
         lotteries[currentLotteryNo].numpurchasetxs += 1;
 
         // Log ticket purchased
@@ -222,13 +253,53 @@ contract NBGLottery {
     }
 
     /*
+        Checks if a user specified by their adress has won the lottery with a specific ticket.
+        @param lottery_no Lottery ID
+        @param addr address of the user
+        @param ticket_no Ticket number which the user wants to check. 
+        @return won Whether the address has already won or not
+        Not: ne yaptığını sor? 
+    */
+
+
+    function checkIfAddrTicketWon(address addr, uint lottery_no, uint ticket_no)
+        public view returns (bool won){
+        // Ensure the lottery has ended
+        require(lotteries[lottery_no].state == LotteryStructs.LotteryState.COMPLETED, "Lottery has not ended");
+
+        // Get the list of winning tickets for the given lottery
+        uint[] memory winningTickets = lotteryWinners[lottery_no];
+        uint[] memory userTickets = addressToTickets[addr][lottery_no];
+
+        // Check if the ticket exists in the user's list of tickets
+        bool ticketExists = false;
+        for (uint i = 0; i < userTickets.length; i++) {
+            if (userTickets[i] == ticket_no) {
+                ticketExists = true;
+                break;
+            }
+        }
+
+        // If the ticket exists, check if it is a winning ticket
+        if (ticketExists) {
+            for (uint i = 0; i < winningTickets.length; i++) {
+                if (winningTickets[i] == ticket_no) {
+                    return true; // Ticket is a winner
+                }
+            }
+        }
+        return false; // Ticket is not a winner
+    }   
+
+
+    /*
      createLottery - MGE - implemented
     buyTicketTx - MGE - implementing (total cost)
     function revealRndNumberTx(uint sticketno, quantity, uint rnd_number) public - Nurhan
     getNumPurchaseTxs - Başak - implemented
     getIthPurchasedTicketTx - MGE - implemented
     function checkIfMyTicketWon(uint lottery_no, uint ticket_no) public view returns (bool won) - Nurhan
-    checkIfAddrTicketWon - Başak - implementing
+    checkIfAddrTicketWon - Başak - implemented
     function getIthWinningTicket(uint lottery_no,uint i) public view returns (uint ticketno) 
     function withdrawTicketRefund(uint lottery_no, uint sticket_no) public - Nurhan
     getCurrentLotteryNo - Başak - implemented
