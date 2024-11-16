@@ -80,9 +80,9 @@ contract NBGLottery {
         uint nooftickets,
         uint noofwinners,
         uint minpercentage,
-        uint ticketprice
-        //bytes32 htmlhash
-        //string memory url
+        uint ticketprice,
+        bytes32 htmlhash,
+        string memory url
     ) public onlyOwner returns (uint lottery_no) {
         require(noofwinners > 0, "At least one winner required");
         //require(minpercentage <= 100, "Min participation cannot exceed 100");
@@ -94,8 +94,8 @@ contract NBGLottery {
             noOfWinners: noofwinners,
             minPercentage: minpercentage,
             ticketPrice: ticketprice,
-            //htmlhash: htmlhash,
-            //url: url,
+            htmlhash: htmlhash,
+            url: url,
             soldTickets: 0,
             transactions:0,
             state: LotteryStructs.LotteryState.ACTIVE,
@@ -214,20 +214,20 @@ contract NBGLottery {
 
     
     /*
-    createLottery - MGE - implementing
-    buyTicketTx - MGE - implementing
+        createLottery - MGE - implemented
+        buyTicketTx - MGE - implementing (total cost)
     function revealRndNumberTx(uint sticketno, quantity, uint rnd_number) public - Nurhan
     getNumPurchaseTxs - Başak - implemented
-    getIthPurchasedTicketTx - MGE - implementing
+        getIthPurchasedTicketTx - MGE - implemented
     function checkIfMyTicketWon(uint lottery_no, uint ticket_no) public view returns (bool won) - Nurhan
     checkIfAddrTicketWon - Başak - implementing
-    function getIthWinningTicket(uint lottery_no,uint i) public view returns (uint ticketno) 
+        function getIthWinningTicket(uint lottery_no,uint i) public view returns (uint ticketno) 
     function withdrawTicketRefund(uint lottery_no, uint sticket_no) public - Nurhan
     getCurrentLotteryNo - Başak - implemented
-    function withdrawTicketProceeds(uint lottery_no) public onlyOwner
+        function withdrawTicketProceeds(uint lottery_no) public onlyOwner
     function setPaymentToken(address erctokenaddr) public onlyOwner - Nurhan 
     function getPaymentToken - Başak - implementing
-     getLotteryInfo - MGE - implementing
+        getLotteryInfo - MGE - implemented
     function getLotteryURL(uint lottery_no) public returns(bytes32 htmlhash, string url) - Nurhan
      function getLotterySales - Başak - implemented
     */
