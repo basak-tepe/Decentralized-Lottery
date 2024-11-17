@@ -138,7 +138,7 @@ contract CompanyLotteries {
         
         // Check if the lottery is active, lottery is finished, and are there enough tickets to sold
         require(lotteries[lottery_no].state == LotteryStructs.LotteryState.PURCHASE, "Lottery is not active");
-        require(block.timestamp > lotteries[lottery_no].unixbeg, "Lottery has ended");
+        require(block.timestamp < lotteries[lottery_no].revealStartTime, "Lottery sale is done");
         require(lotteries[lottery_no].numsold + quantity <= lotteries[lottery_no].nooftickets, "Not enough tickets available");
 
         // Calculate total cost
