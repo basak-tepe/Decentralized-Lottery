@@ -28,10 +28,10 @@ library LotteryStructs {
         uint noofwinners;       // Number of winners to be selected
         uint minpercentage;     // Minimum percentage of tickets to be sold for the lottery to be valid
         uint ticketprice;       // Price of each ticket (in the NBG Token)
-        uint numsold;       // Number of tickets sold
+        uint numsold;           // Number of tickets sold
         LotteryState state;     // Current state of the lottery
         uint numpurchasetxs;
-        uint currentticketno;   //which ticket are we distributing RN.
+        uint sticketno;   // Which ticket are we distributing RN.
         bytes32 htmlhash;       // Hash of the lottery details page (will be used for off-chain data verification)
         string url;             // URL of the lottery details page (when needed)
         address erctokenaddr;   // Address of the NBG Token contract used for payments
