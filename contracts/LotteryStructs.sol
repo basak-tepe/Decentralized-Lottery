@@ -12,9 +12,8 @@ library LotteryStructs {
       Enum representing the various states a lottery can go through.
      */
     enum LotteryState {
-        INACTIVE,       // 0: Lottery is not yet started
-        ACTIVE,         // 1: Lottery is ongoing and tickets can be purchased
-        CLOSED,         // 2: Lottery has ended and ticket purchase is not available
+        PURCHASE,         // 1: Lottery is ongoing and tickets can be purchased
+        REVEAL,         // 2: Lottery has ended and it is number submission time
         COMPLETED,      // 3: Lottery is completed and the winner is revealed
         CANCELLED        // 4: Lottery is cancelled
     }
@@ -23,18 +22,19 @@ library LotteryStructs {
         Struct representing a single lottery's information.
      */
     struct LotteryInfo {
-        uint unixbeg;           // Start time of the lottery (in Unix timestamp)
+        uint unixbeg;           // End time of the lottery (in Unix timestamp)
         uint nooftickets;       // Total number of tickets in the lottery
         uint noofwinners;       // Number of winners to be selected
         uint minpercentage;     // Minimum percentage of tickets to be sold for the lottery to be valid
         uint ticketprice;       // Price of each ticket (in the NBG Token)
         uint numsold;           // Number of tickets sold
         LotteryState state;     // Current state of the lottery
-        uint numpurchasetxs;
-        uint sticketno;   // Which ticket are we distributing RN.
+        uint numpurchasetxs;    // Number of purchase transactions.
+        uint sticketno;         // Which ticket are we distributing RN.
         bytes32 htmlhash;       // Hash of the lottery details page (will be used for off-chain data verification)
         string url;             // URL of the lottery details page (when needed)
         address erctokenaddr;   // Address of the NBG Token contract used for payments
+        uint revealStartTime; // Start time for random number reveal
     }
 
     /*

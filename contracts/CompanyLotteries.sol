@@ -3,14 +3,10 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "./LotteryStructs.sol";
-
-/*
-*Mapleri nasıl yaparız?
-* random N + adress -> hash
-* hash  ile ticket_no mapping mi? -> bunun çözümü zor
-* adress ile ticket_no mapping mi? ** şuan bunu yaptım
-* 
-*/
+//SORU
+    //Lottery Stage Change Function
+    /* Ne zaman çağırılacak?
+    */
 
 /*
     Custom ERC20 token for the lottery system.
@@ -66,6 +62,8 @@ contract CompanyLotteries {
     event TicketPurchased(uint lottery_no, uint ticketNo, uint8 quantity); // Track purchased tickets
     event RandomNumberRevealed(uint lottery_no, uint ticketNo, uint rnd_number); // Reveals random number
     event RefundWithdrawn(uint lottery_no, address participant, uint refundAmount); // Refund track if lottery cancelled
+    event LotteryStateUpdated(uint lottery_no);
+    
     //event WinnerDeclared(uint lotteryNo, uint winningTicketNo);
 
     /*
@@ -87,7 +85,7 @@ contract CompanyLotteries {
 
     /*
         Creates a new lottery with Lottery Struct
-        @param unixbeg Start time of the lottery (in Unix timestamp)
+        @param unixbeg End time of the lottery (in Unix timestamp)
         @param noOfTickets Total number of tickets in the lottery
         @param noOfWinners Number of winners to be selected
         @param minPercentage Minimum percentage of tickets to be sold for the lottery to be valid
@@ -105,9 +103,12 @@ contract CompanyLotteries {
     ) public onlyOwner returns (uint lottery_no) {
         require(noofwinners > 0, "At least one winner required");
         require(minpercentage <= 100, "Min participation cannot exceed 100");
+        //time limits
+        uint currentTime = block.timestamp;
+        require(unixbeg > currentTime, "Lottery end time must be in the future.");
         currentLotteryNo++;
         lotteries[currentLotteryNo] = LotteryStructs.LotteryInfo({
-            unixbeg: unixbeg,
+            unixbeg: unixbeg, //end time
             nooftickets: nooftickets,
             noofwinners: noofwinners,
             minpercentage: minpercentage,
@@ -117,8 +118,9 @@ contract CompanyLotteries {
             url: url,
             numsold: 0,
             numpurchasetxs:0,
-            state: LotteryStructs.LotteryState.ACTIVE,
-            erctokenaddr: address(ticketToken)
+            state: LotteryStructs.LotteryState.PURCHASE,
+            erctokenaddr: address(ticketToken),
+            revealStartTime: currentTime + ((unixbeg - currentTime)/ 2)// (half the time of total)
         });
 
         emit LotteryCreated(currentLotteryNo, unixbeg, nooftickets);
@@ -135,8 +137,8 @@ contract CompanyLotteries {
     function buyTicketTx(uint lottery_no, uint8 quantity, bytes32 hash_rnd_number) public returns(uint sticketno) {
         
         // Check if the lottery is active, lottery is finished, and are there enough tickets to sold
-        require(lotteries[lottery_no].state == LotteryStructs.LotteryState.ACTIVE, "Lottery is not active");
-        require(block.timestamp < lotteries[lottery_no].unixbeg, "Lottery has ended");
+        require(lotteries[lottery_no].state == LotteryStructs.LotteryState.PURCHASE, "Lottery is not active");
+        require(block.timestamp > lotteries[lottery_no].unixbeg, "Lottery has ended");
         require(lotteries[lottery_no].numsold + quantity <= lotteries[lottery_no].nooftickets, "Not enough tickets available");
 
         // Calculate total cost
@@ -361,6 +363,7 @@ contract CompanyLotteries {
         @return winner_ticket_no Winner of that lottery
     */
     function determineWinner(uint lottery_no) external view returns (uint winner_ticket_no) {
+        require(lotteries[lottery_no].state == LotteryStructs.LotteryState.COMPLETED, "Lottery is not completed");
         uint256 finalRandomNumber = 0;
 
         // XOR all revealed numbers
@@ -375,6 +378,30 @@ contract CompanyLotteries {
         return winner_ticket_no;
     }
    
+    //Lottery Stage Change Function
+    /* Ne zaman çağırılacak?
+    */
+    function updateLotteryState(uint lottery_no) public onlyOwner {
+        // Check that the lottery exists
+        require(lotteries[lottery_no].unixbeg != 0, "Lottery does not exist");
+        // Ensure valid state transitions PURCHASE -> REVEAL
+        if ((lotteries[lottery_no].state == LotteryStructs.LotteryState.PURCHASE) && (block.timestamp >= lotteries[lottery_no].revealStartTime)) {
+            lotteries[lottery_no].state ==  LotteryStructs.LotteryState.REVEAL;
+        }
+            // Ensure valid state transitions REVEAL -> COMPLETED
+        if ((lotteries[lottery_no].state == LotteryStructs.LotteryState.REVEAL) && (block.timestamp >= lotteries[lottery_no].unixbeg)) {
+            lotteries[lottery_no].state ==  LotteryStructs.LotteryState.COMPLETED;
+        }
+        // Ensure valid state transitions CANCELLATION
+        uint soldpercentage = (lotteries[lottery_no].numsold / lotteries[lottery_no].nooftickets)*100;
+        if ((lotteries[lottery_no].minpercentage > soldpercentage) && (block.timestamp >= lotteries[lottery_no].revealStartTime)) {
+            lotteries[lottery_no].state ==  LotteryStructs.LotteryState.CANCELLED;
+        }
+
+        // Emit an event to track the state change
+        emit LotteryStateUpdated(lottery_no);
+    }
+
     /*
     createLottery - MGE - implemented
     buyTicketTx - MGE - implementing (total cost)
@@ -394,7 +421,11 @@ contract CompanyLotteries {
     getLotterySales - Başak - implemented
     determineWinner (Random Number selection) - Başak - impelemented
     Lottery State Functions - Başak - implementing 
-    -States 4 of 5: Active (in start), Closed (before number submissions), Completed (after reveal) , Cancelled (not enough tickets) (inaktife gerek yok)
+    -States 4 of 5 (inaktife gerek yok)
+    : Purchase (in start) -> DONE 
+    - Reveal (before number submissions), 
+    - Completed (after reveal) , 
+    - Cancelled (not enough tickets)
     Lottery state satılan ticket adedine göre CANCELLED olabilir. Bunu otomatik kontrol eden/update eden bir fonksiyon olmalı.
     */
 
