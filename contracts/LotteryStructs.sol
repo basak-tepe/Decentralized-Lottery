@@ -16,7 +16,7 @@ library LotteryStructs {
         ACTIVE,         // 1: Lottery is ongoing and tickets can be purchased
         CLOSED,         // 2: Lottery has ended and ticket purchase is not available
         COMPLETED,      // 3: Lottery is completed and the winner is revealed
-        CANCELED        // 4: Lottery is cancelled
+        CANCELLED        // 4: Lottery is cancelled
     }
 
     /*

@@ -2,49 +2,103 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "./LotteryStructs.sol";  // Importing LotteryStructs.sol
+import "./LotteryStructs.sol";
 
+/*
+*Mapleri nasıl yaparız?
+* random N + adress -> hash
+* hash  ile ticket_no mapping mi? -> bunun çözümü zor
+* adress ile ticket_no mapping mi? ** şuan bunu yaptım
+* 
+*/
+
+/*
+    Custom ERC20 token for the lottery system.
+*/
 contract TicketToken is ERC20 {
-    address public owner;
+    address public owner; // address of the contract owner
 
-    constructor() ERC20("LotteryTicket", "LTK") {
+    /*
+        Sets up the token with a name and symbol, and assigns the owner.
+        Inherits ERC20 constructor for token initialization
+    */
+    constructor() ERC20("NuBaGo Token", "NBG") {
         owner = msg.sender;
     }
 
+    /*
+        // TODO: enough?
+        @param to the address to receive the tokens
+        @param amount number of tokens to get
+    */
     function mint(address to, uint256 amount) external {
         require(msg.sender == owner, "Only the owner can mint tickets");
         _mint(to, amount);
     }
 }
 
-contract CompanyLottery {
-    using LotteryStructs for LotteryStructs.LotteryInfo; // Using the LotteryInfo struct
-    using LotteryStructs for LotteryStructs.TicketInfo; // Using the TicketInfo struct
-    using LotteryStructs for LotteryStructs.LotteryState; // Using the LotteryState enum
+/*
+    This contract manages lotteries using ERC20 token.
+    TODO: Explain more
+*/
+contract CompanyLotteries {
+
+    using LotteryStructs for *; // Using the LotteryInfo, TicketInfo structs and LotteryState enum
 
     TicketToken public ticketToken;
     address public owner;
-    uint public currentLotteryNo;
+    uint32 public currentLotteryNo;
+
+    // Mapping from user address to their ticket number list for each lottery.
+    /*
+        addressToTickets = {
+        0xABC123...: {    // Address of User A
+            1: [100, 101, 102]  // Lottery 1, Tickets 100, 101, 102
+        }
+    }*/
+
+    mapping(address => mapping(uint => uint[])) public addressToTickets;
+    // Mapping from lottery number to an array of winning ticket numbers
+    mapping(uint => uint[]) public lotteryWinners;
+
+
     mapping(uint => LotteryStructs.LotteryInfo) public lotteries; // Mapping of lottery IDs to LotteryInfo
+
+    // TODO tek bir lottery olacağı için map yerine array kullanılabilir ??
     mapping(uint => LotteryStructs.TicketInfo[]) public lotteryTickets; // Mapping of lottery IDs to an array of TicketInfo structs
-    mapping(uint => mapping(uint => uint)) public ticketPurchaseQuantities;
 
-    event LotteryCreated(uint lotteryNo, uint unixbeg, uint nooftickets);
-    event TicketPurchased(uint lotteryNo, uint ticketNo, uint quantity);
-    event RandomNumberRevealed(uint lotteryNo, uint ticketNo, uint rnd_number);
-    event WinnerDeclared(uint lotteryNo, uint winningTicketNo);
-    event RefundWithdrawn(uint lotteryNo, address participant, uint refundAmount);
+    event LotteryCreated(uint lottery_no, uint unixbeg, uint nooftickets); // Track created lotteries
+    event TicketPurchased(uint lottery_no, uint ticketNo, uint8 quantity); // Track purchased tickets
+    event RandomNumberRevealed(uint lottery_no, uint ticketNo, uint rnd_number);
+    event RefundWithdrawn(uint lottery_no, address participant, uint refundAmount);
+    //event WinnerDeclared(uint lotteryNo, uint winningTicketNo);
 
+    /*
+        Sets the owner and initializes TicketToken contract.
+        @param _ticketTokenAddress address of the deployed TicketToken contract
+    */
     constructor(address _ticketTokenAddress) {
         owner = msg.sender;
         ticketToken = TicketToken(_ticketTokenAddress);
     }
 
+    /*
+        Modifier to control functions that can be called by the owner only
+    */
     modifier onlyOwner() {
         require(msg.sender == owner, "Only the owner can call this function");
         _;
     }
 
+    /*
+        Creates a new lottery with Lottery Struct
+        @param unixbeg Start time of the lottery (in Unix timestamp)
+        @param noOfTickets Total number of tickets in the lottery
+        @param noOfWinners Number of winners to be selected
+        @param minPercentage Minimum percentage of tickets to be sold for the lottery to be valid
+        @param ticketPrice Price of each ticket (in the NBG Token)
+        @returns currentLotteryNo Lottery number of created lottery
+    */
     function createLottery(
         uint unixbeg,
         uint nooftickets,
@@ -52,11 +106,11 @@ contract CompanyLottery {
         uint minpercentage,
         uint ticketprice,
         bytes32 htmlhash,
+        uint currentticketno,
         string memory url
-    ) public onlyOwner returns (uint lotteryNo) {
+    ) public onlyOwner returns (uint lottery_no) {
         require(noofwinners > 0, "At least one winner required");
-        require(minpercentage <= 100, "Min participation cannot exceed 100");
-
+        //require(minpercentage <= 100, "Min participation cannot exceed 100");
         currentLotteryNo++;
         lotteries[currentLotteryNo] = LotteryStructs.LotteryInfo({
             unixbeg: unixbeg,
@@ -65,24 +119,36 @@ contract CompanyLottery {
             minpercentage: minpercentage,
             ticketprice: ticketprice,
             htmlhash: htmlhash,
+            currentticketno: currentticketno,
             url: url,
-            soldTickets: 0,
-            state: LotteryStructs.LotteryState.ACTIVE,  // Lottery state is ACTIVE when created
-            paymentToken: address(ticketToken)
+            numsold: 0,
+            numpurchasetxs:0,
+            state: LotteryStructs.LotteryState.ACTIVE,
+            erctokenaddr: address(ticketToken)
         });
 
         emit LotteryCreated(currentLotteryNo, unixbeg, nooftickets);
         return currentLotteryNo;
     }
 
-    function buyTicketTx(uint quantity, bytes32 hash_rnd_number) public returns (uint sticketno) {
+    /*
+        TODO comment
+        @param quantity Number of tickets to be purchased
+        @param hash_rnd_number Hash generated by the user by using their address and random number
+        @return sTicketNo
+    */
+    function buyTicketTx(uint8 quantity, bytes32 hash_rnd_number) public returns(uint sticketno) {
+        
+        // Check if the lottery is active, lottery is finished, and are there enough tickets to sold
         require(lotteries[currentLotteryNo].state == LotteryStructs.LotteryState.ACTIVE, "Lottery is not active");
         require(block.timestamp < lotteries[currentLotteryNo].unixbeg, "Lottery has ended");
-        require(lotteries[currentLotteryNo].soldTickets + quantity <= lotteries[currentLotteryNo].nooftickets, "Not enough tickets available");
+        require(lotteries[currentLotteryNo].numsold + quantity <= lotteries[currentLotteryNo].nooftickets, "Not enough tickets available");
 
+        // Calculate total cost
         uint totalCost = quantity * lotteries[currentLotteryNo].ticketprice;
-        ticketToken.transferFrom(msg.sender, owner, totalCost);
+        // ticketToken.transferFrom(msg.sender, owner, totalCost);
 
+        // Construct a ticket with the info provided
         LotteryStructs.TicketInfo memory ticket = LotteryStructs.TicketInfo({
             participant: msg.sender,
             quantity: quantity,
@@ -93,10 +159,25 @@ contract CompanyLottery {
         lotteryTickets[currentLotteryNo].push(ticket);
         sticketno = lotteryTickets[currentLotteryNo].length - 1;
 
-        lotteries[currentLotteryNo].soldTickets += quantity;
+        lotteries[currentLotteryNo].numsold += quantity;
+         // Add tickets to user's list in addressToTickets mapping
+        for (uint8 i = 0; i < quantity; i++) {
+            uint Currentticketno = lotteries[currentLotteryNo].currentticketno;
+            Currentticketno +=1;
+            lotteries[currentLotteryNo].currentticketno = Currentticketno;
+            addressToTickets[msg.sender][currentLotteryNo].push(Currentticketno); // Add consecutive ticket numbers
+        }
+
+        //update purchase transactions
+        lotteries[currentLotteryNo].numpurchasetxs += 1;
+
+        // Log ticket purchased
         emit TicketPurchased(currentLotteryNo, sticketno, quantity);
     }
 
+    /*
+        TODO explanation
+    */
     function revealRndNumberTx(uint lottery_no, uint sticketno, uint quantity, uint rnd_number) public {
         require(sticketno < lotteryTickets[lottery_no].length, "Ticket does not exist");
         LotteryStructs.TicketInfo storage ticket = lotteryTickets[lottery_no][sticketno];
@@ -111,83 +192,189 @@ contract CompanyLottery {
         emit RandomNumberRevealed(lottery_no, sticketno, rnd_number);
     }
 
-    function getNumPurchaseTxs(uint lotteryNo) public view returns (uint numpurchasetxs) {
-        return lotteryTickets[lotteryNo].length;
+    // Getter functions
+    /*
+        View function to get information of a ticket.
+        Allows anyone to view the quantity of tickets purchased in the Ith transaction for a specified lottery
+        @param i Ticket index number (starts with 1 as first)
+        @param lottery_no lottery number which the ticket is in
+        @return sTicketNo Sold ticket no
+        @return quantity Quantity of tickets sold
+    */
+    function getIthPurchasedTicketTx(uint i, uint lottery_no) public view returns (uint sticketno, uint8 quantity) {
+        // Decrement i by 1 to match the array index
+        i = i-1;
+        // Check if the number of ticket is more than total ticket sold
+        require(i < lotteryTickets[lottery_no].length, "Index out of range");
+        // Create a reference to a specific TicketInfo struct stored in the contract’s state
+        LotteryStructs.TicketInfo storage ticket = lotteryTickets[lottery_no][i];
+        return (i, ticket.quantity);
     }
 
-    function getIthPurchasedTicketTx(uint i, uint lotteryNo) public view returns (uint sticketno, uint quantity, address participant) {
-        require(i < lotteryTickets[lotteryNo].length, "Index out of range");
-        LotteryStructs.TicketInfo storage ticket = lotteryTickets[lotteryNo][i];
-        return (i, ticket.quantity, ticket.participant);
-    }
-
-    function checkIfMyTicketWon(uint lotteryNo, uint ticketNo) public view returns (bool won) {
-        // Check if ticketNo is in the list of winners for the lottery
-        LotteryStructs.LotteryInfo storage lottery = lotteries[lotteryNo];
-        for (uint i = 0; i < lottery.winningTickets.length; i++) {
-            if (lottery.winningTickets[i] == ticketNo) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    function checkIfAddrTicketWon(address addr, uint lotteryNo, uint ticketNo) public view returns (bool won) {
-        // Check if addr's ticket won in lotteryNo
-    }
-
-    function getIthWinningTicket(uint lotteryNo, uint i) public view returns (uint ticketNo) {
-        // Return the i-th winning ticket
-    }
-
-    function withdrawTicketRefund(uint lotteryNo, uint sticketNo) public {
-        // Refund logic if the lottery was canceled
-        LotteryStructs.LotteryInfo storage lottery = lotteries[lotteryNo];
-        require(lottery.isCancelled, "Lottery is not cancelled");
-        require(lottery.ticketOwners[sticketNo] == msg.sender, "You are not the owner of this ticket");
-        require(lottery.refunds[msg.sender] == 0, "Refund already withdrawn");
-        uint refundAmount = lottery.ticketPrice;
-        lottery.refunds[msg.sender] = refundAmount;
-        IERC20 paymentToken = IERC20(lottery.paymentToken);
-        require(paymentToken.transfer(msg.sender, refundAmount), "Refund transfer failed");
-        emit RefundWithdrawn(lotteryNo, msg.sender, refundAmount);
-    }
-    
-
-    function getCurrentLotteryNo() public view returns (uint lotteryNo) {
-        return currentLotteryNo;
-    }
-
-    function withdrawTicketProceeds(uint lotteryNo) public onlyOwner {
-        // Withdraw proceeds to the lottery owner
-    }
-
-    function setPaymentToken(address ercTokenAddr) public onlyOwner {
-        require(ercTokenAddr != address(0), "Invalid token address");
-        lotteries[currentLotteryNo].paymentToken = ercTokenAddr;
-    }
-
-    function getPaymentToken(uint lotteryNo) public view returns (address ercTokenAddr) {
-        return lotteries[lotteryNo].paymentToken;
-    }
-
-    function getLotteryInfo(uint lotteryNo) public view returns (
+    /*
+        Retrieves the essential information about a specific lottery based on its unique lottery ID
+        @param unixbeg Start time of the lottery (in Unix timestamp)
+        @param noOfTickets Total number of tickets in the lottery
+        @param noOfWinners Number of winners to be selected
+        @param minPercentage Minimum percentage of tickets to be sold for the lottery to be valid
+        @param ticketPrice Price of each ticket (in the NBG Token)
+    */
+    function getLotteryInfo(uint32 lottery_no) public view returns (
         uint unixbeg,
         uint nooftickets,
         uint noofwinners,
         uint minpercentage,
         uint ticketprice
     ) {
-        LotteryStructs.LotteryInfo storage lottery = lotteries[lotteryNo];
+        // Access the LotteryInfo struct for the specified lottery number
+        LotteryStructs.LotteryInfo storage lottery = lotteries[lottery_no];
         return (lottery.unixbeg, lottery.nooftickets, lottery.noofwinners, lottery.minpercentage, lottery.ticketprice);
     }
 
-    function getLotteryURL(uint lotteryNo) public view returns (bytes32 htmlhash, string memory url) {
-        LotteryStructs.LotteryInfo storage lottery = lotteries[lotteryNo];
+    /*
+        Retrieves the number of purchase Transactions a specific lottery.
+        @param lottery_no Lottery ID which is used to retrieve information about its transactions.
+        @return numpurchasetxs Number of transactions
+        TODO: Transaction için yeni parametre ekledim, bunu sor.
+    */
+    function getNumPurchaseTxs(uint lottery_no) public view returns (uint numpurchasetxs){
+       return lotteries[lottery_no].numpurchasetxs;
+    }
+
+     /*
+        Returns the current lottery number of the contract.
+        @param None
+        @return currentLotteryNo Current Lottery number in the contract.
+    */
+     function getCurrentLotteryNo() public view returns (uint32 lottery_no) {
+        return currentLotteryNo;
+    }
+
+    /*
+        TODO explanation
+    */
+    function setPaymentToken(address ercTokenAddr) public onlyOwner {
+        require(ercTokenAddr != address(0), "Invalid token address");
+        lotteries[currentLotteryNo].erctokenaddr = ercTokenAddr;
+    }
+
+    
+    /*
+        Retrieves the number of ticket sold for a specific lottery.
+        @param lottery_no Lottery ID which is used to retrieve information about its state and sold tickets
+        @return soldTickets Number of purchased tickets in that particular lottery
+    */
+    function getLotterySales(uint lottery_no) public view returns (uint numsold) {
+        return lotteries[lottery_no].numsold;
+    }
+
+     /*
+        Retrieves the adress of the payment token for a specific lottery.
+        @param lottery_no Lottery ID which is used to retrieve information about its state and sold tickets
+        @return erctokenaddr Adress of the payment token in that particular lottery
+        Not: ne yaptığını sor? 
+    */
+    function getPaymentToken(uint lottery_no) public view returns (address erctokenaddr){
+        return lotteries[lottery_no].erctokenaddr;
+    }
+
+    /* 
+        TODO explanation
+    */
+    function checkIfMyTicketWon(uint lottery_no, uint ticketNo) public view returns (bool won) {
+        // Check if ticketNo is in the list of winners for the lottery
+        //LotteryStructs.LotteryInfo storage lottery = lotteries[lottery_no];
+        for (uint i = 0; i < lotteryWinners[lottery_no].length; i++) {
+            if (lotteryWinners[lottery_no][i] == ticketNo) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /*
+        Checks if a user specified by their adress has won the lottery with a specific ticket.
+        @param lottery_no Lottery ID
+        @param addr address of the user
+        @param ticket_no Ticket number which the user wants to check. 
+        @return won Whether the address has already won or not
+        Not: ne yaptığını sor? 
+    */
+    function checkIfAddrTicketWon(address addr, uint lottery_no, uint ticket_no)
+        public view returns (bool won){
+        // Ensure the lottery has ended
+        require(lotteries[lottery_no].state == LotteryStructs.LotteryState.COMPLETED, "Lottery has not ended");
+
+        // Get the list of winning tickets for the given lottery
+        uint[] memory winningTickets = lotteryWinners[lottery_no];
+        uint[] memory userTickets = addressToTickets[addr][lottery_no];
+
+        // Check if the ticket exists in the user's list of tickets
+        bool ticketExists = false;
+        for (uint i = 0; i < userTickets.length; i++) {
+            if (userTickets[i] == ticket_no) {
+                ticketExists = true;
+                break;
+            }
+        }
+
+        // If the ticket exists, check if it is a winning ticket
+        if (ticketExists) {
+            for (uint i = 0; i < winningTickets.length; i++) {
+                if (winningTickets[i] == ticket_no) {
+                    return true; // Ticket is a winner
+                }
+            }
+        }
+        return false; // Ticket is not a winner
+    }   
+
+    /*
+        TODO explanation
+    */
+    function withdrawTicketRefund(uint lottery_no, uint sticketNo) public {
+        // Refund logic if the lottery was canceled
+        LotteryStructs.LotteryInfo storage lottery = lotteries[lottery_no];
+        require(lottery.state == LotteryStructs.LotteryState.CANCELLED, "Lottery is not canceled");
+        /*
+        // TODO fix
+        //require(lottery.ticketOwners[sticketNo] == msg.sender, "You are not the owner of this ticket"); 
+        //require(addressToTickets[msg.sender][lottery_no] == msg.sender, "You are not the owner of this ticket");
+        //require(lottery.refunds[msg.sender] == 0, "Refund already withdrawn");
+        uint refundAmount = lottery.ticketPrice;
+        lottery.refunds[msg.sender] = refundAmount;
+        IERC20 paymentToken = IERC20(lottery.paymentToken);
+        require(paymentToken.transfer(msg.sender, refundAmount), "Refund transfer failed");
+        */
+        uint refundAmount = 0;
+        emit RefundWithdrawn(lottery_no, msg.sender, refundAmount);
+    }
+
+    /*
+        TODO explanation
+    */
+    function getLotteryURL(uint lottery_no) public view returns (bytes32 htmlhash, string memory url) {
+        LotteryStructs.LotteryInfo storage lottery = lotteries[lottery_no];
         return (lottery.htmlhash, lottery.url);
     }
 
-    function getLotterySales(uint lotteryNo) public view returns (uint numsold) {
-        return lotteries[lotteryNo].soldTickets;
-    }
+    /*
+     createLottery - MGE - implemented
+    buyTicketTx - MGE - implementing (total cost)
+    revealRndNumberTx - Nurhan - implemented
+    getNumPurchaseTxs - Başak - implemented
+    getIthPurchasedTicketTx - MGE - implemented
+    checkIfMyTicketWon - Nurhan - implemented
+    checkIfAddrTicketWon - Başak - implemented
+    function getIthWinningTicket(uint lottery_no,uint i) public view returns (uint ticketno) 
+    withdrawTicketRefund - Nurhan - implemented
+    getCurrentLotteryNo - Başak - implemented
+    function withdrawTicketProceeds(uint lottery_no) public onlyOwner
+    setPaymentToken - Nurhan - implemented
+    function getPaymentToken - Başak - implemented
+    getLotteryInfo - MGE - implemented
+    getLotteryURL - Nurhan - implemented
+    getLotteryURL     function getLotterySales - Başak - implemented
+    */
+
 }
