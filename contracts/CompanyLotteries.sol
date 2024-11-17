@@ -52,7 +52,7 @@ contract CompanyLotteries {
     mapping(uint => LotteryStructs.LotteryInfo) public lotteries; // Mapping of lottery IDs to LotteryInfo
     mapping(uint => LotteryStructs.TicketInfo[]) public lotteryTickets; // Mapping of lottery IDs to an array of TicketInfo structs
     mapping(uint => uint[]) public lotteryWinners; // Mapping from lottery number to an array of winning ticket numbers
-
+    mapping(uint => uint[]) public randomNumbers; // Mapping from lottery number to an array of random numbers
     // Mapping from user address to their ticket number list for each lottery.
     /*
         addressToTickets = {
@@ -184,6 +184,8 @@ contract CompanyLotteries {
         require(ticket.hash_rnd_number == keccak256(abi.encodePacked(rnd_number)), "Random number does not match commitment");
 
         ticket.revealed = true;
+        //add random number to list
+        randomNumbers[lottery_no].push(rnd_number);
         emit RandomNumberRevealed(lottery_no, sticketno, rnd_number);
     }
 
@@ -293,7 +295,6 @@ contract CompanyLotteries {
         @param addr address of the user
         @param ticket_no Ticket number which the user wants to check. 
         @return won Whether the address has already won or not
-        Not: ne yaptığını sor? 
     */
     function checkIfAddrTicketWon(address addr, uint lottery_no, uint ticket_no)
         public view returns (bool won){
@@ -353,6 +354,27 @@ contract CompanyLotteries {
         return (lottery.htmlhash, lottery.url);
     }
 
+
+    /*
+        Calculates who won a specific lottery by XOR'ing random numbers.
+        @param lottery_no Lottery ID
+        @return winner_ticket_no Winner of that lottery
+    */
+    function determineWinner(uint lottery_no) external view returns (uint winner_ticket_no) {
+        uint256 finalRandomNumber = 0;
+
+        // XOR all revealed numbers
+        for (uint256 i = 0; i < randomNumbers[lottery_no].length; i++) {
+            uint256 userRandomNumber = randomNumbers[lottery_no][i];
+            finalRandomNumber ^= userRandomNumber;
+        }
+
+        // Determine winner based on final random number
+        uint256 winnerIndex = finalRandomNumber % randomNumbers[lottery_no].length;
+        winner_ticket_no = randomNumbers[lottery_no][winnerIndex];
+        return winner_ticket_no;
+    }
+   
     /*
     createLottery - MGE - implemented
     buyTicketTx - MGE - implementing (total cost)
@@ -370,7 +392,9 @@ contract CompanyLotteries {
     getLotteryInfo - MGE - implemented
     getLotteryURL - Nurhan - implemented
     getLotterySales - Başak - implemented
-
+    determineWinner (Random Number selection) - Başak - impelemented
+    Lottery State Functions - Başak - implementing 
+    -States 4 of 5: Active (in start), Closed (before number submissions), Completed (after reveal) , Cancelled (not enough tickets) (inaktife gerek yok)
     Lottery state satılan ticket adedine göre CANCELLED olabilir. Bunu otomatik kontrol eden/update eden bir fonksiyon olmalı.
     */
 
