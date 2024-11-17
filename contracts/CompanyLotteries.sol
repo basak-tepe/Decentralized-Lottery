@@ -33,6 +33,7 @@ contract CompanyLottery {
     event TicketPurchased(uint lotteryNo, uint ticketNo, uint quantity);
     event RandomNumberRevealed(uint lotteryNo, uint ticketNo, uint rnd_number);
     event WinnerDeclared(uint lotteryNo, uint winningTicketNo);
+    event RefundWithdrawn(uint lotteryNo, address participant, uint refundAmount);
 
     constructor(address _ticketTokenAddress) {
         owner = msg.sender;
@@ -96,9 +97,9 @@ contract CompanyLottery {
         emit TicketPurchased(currentLotteryNo, sticketno, quantity);
     }
 
-    function revealRndNumberTx(uint sticketno, uint quantity, uint rnd_number) public {
-        require(sticketno < lotteryTickets[currentLotteryNo].length, "Ticket does not exist");
-        LotteryStructs.TicketInfo storage ticket = lotteryTickets[currentLotteryNo][sticketno];
+    function revealRndNumberTx(uint lottery_no, uint sticketno, uint quantity, uint rnd_number) public {
+        require(sticketno < lotteryTickets[lottery_no].length, "Ticket does not exist");
+        LotteryStructs.TicketInfo storage ticket = lotteryTickets[lottery_no][sticketno];
         require(ticket.participant == msg.sender, "Not the ticket owner");
         require(ticket.quantity == quantity, "Quantity mismatch");
         require(!ticket.revealed, "Random number already revealed");
@@ -107,7 +108,7 @@ contract CompanyLottery {
         require(ticket.hash_rnd_number == keccak256(abi.encodePacked(rnd_number)), "Random number does not match commitment");
 
         ticket.revealed = true;
-        emit RandomNumberRevealed(currentLotteryNo, sticketno, rnd_number);
+        emit RandomNumberRevealed(lottery_no, sticketno, rnd_number);
     }
 
     function getNumPurchaseTxs(uint lotteryNo) public view returns (uint numpurchasetxs) {
@@ -122,6 +123,13 @@ contract CompanyLottery {
 
     function checkIfMyTicketWon(uint lotteryNo, uint ticketNo) public view returns (bool won) {
         // Check if ticketNo is in the list of winners for the lottery
+        LotteryStructs.LotteryInfo storage lottery = lotteries[lotteryNo];
+        for (uint i = 0; i < lottery.winningTickets.length; i++) {
+            if (lottery.winningTickets[i] == ticketNo) {
+                return true;
+            }
+        }
+        return false;
     }
 
     function checkIfAddrTicketWon(address addr, uint lotteryNo, uint ticketNo) public view returns (bool won) {
@@ -134,7 +142,17 @@ contract CompanyLottery {
 
     function withdrawTicketRefund(uint lotteryNo, uint sticketNo) public {
         // Refund logic if the lottery was canceled
+        LotteryStructs.LotteryInfo storage lottery = lotteries[lotteryNo];
+        require(lottery.isCancelled, "Lottery is not cancelled");
+        require(lottery.ticketOwners[sticketNo] == msg.sender, "You are not the owner of this ticket");
+        require(lottery.refunds[msg.sender] == 0, "Refund already withdrawn");
+        uint refundAmount = lottery.ticketPrice;
+        lottery.refunds[msg.sender] = refundAmount;
+        IERC20 paymentToken = IERC20(lottery.paymentToken);
+        require(paymentToken.transfer(msg.sender, refundAmount), "Refund transfer failed");
+        emit RefundWithdrawn(lotteryNo, msg.sender, refundAmount);
     }
+    
 
     function getCurrentLotteryNo() public view returns (uint lotteryNo) {
         return currentLotteryNo;
