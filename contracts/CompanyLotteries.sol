@@ -252,6 +252,24 @@ contract CompanyLotteries {
     /*
         TODO explanation
     */
+    function withdrawTicketProceeds(uint lottery_no) public onlyOwner {
+        // Access the lottery information
+        LotteryStructs.LotteryInfo storage lottery = lotteries[lottery_no];
+        // Ensure the lottery has ended
+        require(lottery.state == LotteryStructs.LotteryState.COMPLETED, "Lottery is not completed");
+        // Calculate the total proceeds from ticket sales
+        uint totalProceeds = lottery.numsold * lottery.ticketprice;
+        // Ensure there are proceeds to withdraw
+        require(totalProceeds > 0, "No proceeds to withdraw");
+        // Transfer the proceeds to the owner
+        require(ticketToken.transfer(owner, totalProceeds), "Transfer failed");
+
+}
+
+
+    /*
+        TODO explanation
+    */
     function setPaymentToken(address ercTokenAddr) public onlyOwner {
         require(ercTokenAddr != address(0), "Invalid token address");
         lotteries[currentLotteryNo].erctokenaddr = ercTokenAddr;
@@ -330,23 +348,64 @@ contract CompanyLotteries {
     /*
         TODO explanation
     */
+    function getIthWinningTicket(uint lottery_no, uint i) 
+        public 
+        view 
+        returns (uint ticketno) 
+    {
+        // Access the winning tickets array for the specified lottery
+        uint[] storage winningTickets = lotteryWinners[lottery_no];
+        // Ensure the index `i` is within bounds
+        require(i < winningTickets.length, "Index out of range");
+        // Retrieve the winning ticket at the specified index
+        ticketno = winningTickets[i];
+        return ticketno;
+}
+
+    /*
+    Allows users to withdraw a refund for a specific ticket if the lottery was canceled.
+    @param lottery_no The ID of the lottery.
+    @param sticketNo The starting ticket number of the purchased batch to refund.
+    Emits a RefundWithdrawn event upon successful refund.
+*/
     function withdrawTicketRefund(uint lottery_no, uint sticketNo) public {
-        // Refund logic if the lottery was canceled
+        // Retrieve the lottery information
         LotteryStructs.LotteryInfo storage lottery = lotteries[lottery_no];
+        // Ensure the lottery is in a canceled state
         require(lottery.state == LotteryStructs.LotteryState.CANCELLED, "Lottery is not canceled");
-        /*
-        // TODO fix
-        //require(lottery.ticketOwners[sticketNo] == msg.sender, "You are not the owner of this ticket"); 
-        //require(addressToTickets[msg.sender][lottery_no] == msg.sender, "You are not the owner of this ticket");
-        //require(lottery.refunds[msg.sender] == 0, "Refund already withdrawn");
-        uint refundAmount = lottery.ticketPrice;
-        lottery.refunds[msg.sender] = refundAmount;
-        IERC20 paymentToken = IERC20(lottery.paymentToken);
-        require(paymentToken.transfer(msg.sender, refundAmount), "Refund transfer failed");
-        */
-        uint refundAmount = 0;
+
+    // Ensure the refund has not already been withdrawn
+   // require(!lottery.refunds[msg.sender], "Refund already withdrawn");
+
+        // Retrieve the list of ticket numbers owned by the caller for this lottery
+        uint[] storage userTickets = addressToTickets[msg.sender][lottery_no];
+        bool ticketFound = false;
+
+        // Check if the caller owns the ticket number
+        for (uint i = 0; i < userTickets.length; i++) {
+            if (userTickets[i] == sticketNo) {
+                ticketFound = true;
+                // Remove the ticket from the user's list (optional but recommended for cleanup)
+                userTickets[i] = userTickets[userTickets.length - 1];
+                userTickets.pop();
+                break;
+            }
+        }
+        require(ticketFound, "You do not own this ticket");
+        // Calculate the refund amount
+        uint refundAmount = lottery.ticketprice;
+
+        // Mark the refund as withdrawn
+        //lottery.refunds[msg.sender] = true;
+
+        // Transfer the refund amount to the caller
+        require(ticketToken.transfer(msg.sender, refundAmount), "Refund transfer failed");
+
+        // Emit a refund event
         emit RefundWithdrawn(lottery_no, msg.sender, refundAmount);
-    }
+}
+
+    
 
     /*
         TODO explanation
@@ -410,10 +469,10 @@ contract CompanyLotteries {
     getIthPurchasedTicketTx - MGE - implemented
     checkIfMyTicketWon - Nurhan - implemented
     checkIfAddrTicketWon - Başak - implemented
-        function getIthWinningTicket(uint lottery_no,uint i) public view returns (uint ticketno)    NURHAN
+    getIthWinningTicket-  NURHAN - implemented
     withdrawTicketRefund - Nurhan - implemented
     getCurrentLotteryNo - Başak - implemented
-        function withdrawTicketProceeds(uint lottery_no) public onlyOwner   NURHAN
+    withdrawTicketProceeds-  NURHAN - implemented
     setPaymentToken - Nurhan - implemented
     getPaymentToken - Başak - implemented
     getLotteryInfo - MGE - implemented
