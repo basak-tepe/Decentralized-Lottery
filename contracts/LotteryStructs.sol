@@ -42,7 +42,7 @@ library LotteryStructs {
      */
     struct TicketInfo {
         address participant;        // Address of the user who purchased the ticket(s)
-        uint8 quantity;             // Number of tickets purchased in this transaction - Max 30 can be sold
+        uint quantity;             // Number of tickets purchased in this transaction - Max 30 can be sold
         bytes32 hash_rnd_number;    // Commitment hash of a random number (used for fair lottery mechanics)
         bool revealed;              // Indicates if the participant has revealed their random number
     }
