@@ -13,7 +13,7 @@ contract TestCompanyLottery {
     address public participant;
     uint createdLotteryId;
 
-    function beforeAll() public {
+    function beforeEach() public {
         // Initialize the contract before all tests
         ticketToken = new TicketToken();
         lottery = new CompanyLotteries(address(ticketToken));
@@ -93,4 +93,37 @@ contract TestCompanyLottery {
         Assert.equal(revealedNumber, rnd_number, "Random number should match");
     }
     */
+
+        // Test for getting the current lottery number
+    function testGetCurrentLotteryNo() public {
+        uint currentLottery = lottery.getCurrentLotteryNo();
+        Assert.equal(currentLottery, createdLotteryId, "Current lottery number should match the created lottery ID");
+    }
+
+    // Test for getting the payment token of a lottery
+    function testGetPaymentToken() public {
+        address ercTokenAddress = lottery.getPaymentToken(createdLotteryId);
+        Assert.equal(ercTokenAddress, address(ticketToken), "ERC20 token address should match the ticket token contract address");
+    }
+
+    // Test for getting the number of tickets sold in a lottery
+    function testGetLotterySales() public {
+        // Before any sales, numsold should be 0
+        uint ticketsSold = lottery.getLotterySales(createdLotteryId);
+        Assert.equal(ticketsSold, 0, "Number of tickets sold should be 0 initially");
+
+        // Simulate ticket sales
+        uint quantity = 5;
+        bytes32 hashRndNumber = bytes32("randomhash");
+
+        // Mint tokens and purchase tickets
+        ticketToken.mint(participant, 10 ether);
+        ticketToken.approve(address(lottery), 10 ether);
+
+        //lottery.buyTicketTx(quantity, hashRndNumber);
+
+        // Check the updated number of tickets sold
+        ticketsSold = lottery.getLotterySales(createdLotteryId);
+        Assert.equal(ticketsSold, quantity, "Number of tickets sold should match the purchased quantity");
+    }
 }
