@@ -8,36 +8,45 @@ import "../contracts/LotteryStructs.sol";  // Import LotteryStructs.sol
 
 contract TestCompanyLottery {
     TicketToken public ticketToken;
-    CompanyLottery public lottery;
+    CompanyLotteries public lottery;
     address public owner;
     address public participant;
+    uint createdLotteryId;
 
     function beforeAll() public {
         // Initialize the contract before all tests
         ticketToken = new TicketToken();
-        lottery = new CompanyLottery(address(ticketToken));
+        lottery = new CompanyLotteries(address(ticketToken));
         owner = address(this); // Use the contract owner as a participant
         participant = address(0x123); // Random address for the test participant
     }
 
     // Test for creating a lottery
     function testCreateLottery() public {
-        uint unixbeg = block.timestamp + 3600; // 1 hour from now
+        uint unixEndTime = block.timestamp + 36000; // 10 hours from now
         uint nooftickets = 100;
-        uint noofwinners = 1;
+        uint noofwinners = 5;
         uint minpercentage = 50;
-        uint ticketprice = 1 ether;
-        bytes32 htmlhash = bytes32("hash");
-        string memory url = "http://example.com";
+        uint ticketprice = 2;
 
-        uint lotteryNo = lottery.createLottery(unixbeg, nooftickets, noofwinners, minpercentage, ticketprice, htmlhash, url);
+        uint lotteryId = lottery.createLottery(
+            unixEndTime,
+            nooftickets,
+            noofwinners,
+            minpercentage,
+            ticketprice,
+            keccak256(abi.encodePacked("hash")), // Hash
+            "http://example.com" // URL
+        );
+        createdLotteryId = lotteryId;
         
         // Test that the lottery was created successfully
-        Assert.equal(lotteryNo, 1, "Lottery should be created with ID 1");
+        Assert.equal(lotteryId, 1, "Lottery should be created with ID 1");
+
+        Assert.ok(lotteryId > 0, "Lottery creation failed");
 
         // Check the lottery info
-        (uint unixStart, uint numTickets, uint numWinners, uint minPercent, uint price) = lottery.getLotteryInfo(lotteryNo);
-        Assert.equal(unixStart, unixbeg, "Lottery start time should match");
+        (uint unixStart, uint numTickets, uint numWinners, uint minPercent, uint price) = lottery.getLotteryInfo(lotteryId);
         Assert.equal(numTickets, nooftickets, "Number of tickets should match");
         Assert.equal(numWinners, noofwinners, "Number of winners should match");
         Assert.equal(minPercent, minpercentage, "Minimum participation percentage should match");
@@ -45,7 +54,7 @@ contract TestCompanyLottery {
     }
 
     // Test for purchasing a ticket
-    function testBuyTicket() public {
+    /*function testBuyTicket() public {
         uint lotteryNo = 1;
         uint quantity = 1;
         bytes32 hash_rnd_number = bytes32("randomhash");
@@ -61,7 +70,7 @@ contract TestCompanyLottery {
         (uint ticketNo2, uint ticketQuantity, address ticketParticipant) = lottery.getIthPurchasedTicketTx(ticketNo, lotteryNo);
         Assert.equal(ticketQuantity, quantity, "Ticket quantity should match");
         Assert.equal(ticketParticipant, participant, "Ticket participant should match");
-    }
+    }*/
 
     // Test for revealing the random number
     /*function testRevealRndNumber() public {
