@@ -1,0 +1,45 @@
+{
+	"compiler": {
+		"version": "0.8.26+commit.8a97fa7a"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/LotteryStructs.sol": "LotteryStructs"
+		},
+		"evmVersion": "cancun",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"contracts/LotteryStructs.sol": {
+			"keccak256": "0x5585432d120fc6e7c4f459ef2b832665d1b38fefd866b99349b542c17226e2df",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://d77a63a13a1ecd4bb65ba6c863ec7655d89548944d46f2fd9b61daca24023b49",
+				"dweb:/ipfs/QmbCq9t7XuDYWFss7cyjopwHFi3hYdF6W6iFyEsbNVQGqu"
+			]
+		}
+	},
+	"version": 1
+}

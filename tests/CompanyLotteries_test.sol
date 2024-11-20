@@ -12,6 +12,7 @@ contract TestCompanyLottery {
     address public owner;
     address public participant;
     uint createdLotteryId;
+    uint256[] public lotteryWinners;
 
     function beforeEach() public {
         // Initialize the contract before all tests
@@ -126,4 +127,77 @@ contract TestCompanyLottery {
         ticketsSold = lottery.getLotterySales(createdLotteryId);
         Assert.equal(ticketsSold, quantity, "Number of tickets sold should match the purchased quantity");
     }
+
+    function testGetNumPurchaseTxs() public {
+    // Create a lottery
+    /* Gerek var mı? Zaten before each var? 
+    uint unixEndTime = block.timestamp + 36000;
+    uint nooftickets = 100;
+    uint noofwinners = 5;
+    uint minpercentage = 50;
+    uint ticketprice = 2;
+
+    uint lotteryId = lottery.createLottery(
+        unixEndTime,
+        nooftickets,
+        noofwinners,
+        minpercentage,
+        ticketprice,
+        keccak256(abi.encodePacked("hash")),
+        "http://example.com"
+    );*/
+
+    // Ensure initial purchase transactions are zero
+    uint initialNumPurchaseTxs = lottery.getNumPurchaseTxs(createdLotteryId);
+    Assert.equal(initialNumPurchaseTxs, 0, "Initial number of purchase transactions should be 0");
+
+    // Simulate ticket purchases
+    uint quantity = 3; // Purchase 3 tickets
+    bytes32 hashRndNumber = keccak256(abi.encodePacked("randomhash"));
+
+    ticketToken.mint(participant, 10 ether);
+    ticketToken.approve(address(lottery), 10 ether);
+
+    for (uint i = 0; i < quantity; i++) {
+        //lottery.buyTicketTx(1, hashRndNumber); // Buy tickets one at a time
+    }
+
+    // Check updated number of purchase transactions
+    uint updatedNumPurchaseTxs = lottery.getNumPurchaseTxs(createdLotteryId);
+    Assert.equal(updatedNumPurchaseTxs, quantity, "Number of purchase transactions should match the number of purchases");
+}
+
+function testCheckIfAddrTicketWon() public {
+    // lottey created with before each
+    // Simulate ticket purchases
+    uint ticketNo = 1;
+    bytes32 hashRndNumber = keccak256(abi.encodePacked("randomhash"));
+
+    ticketToken.mint(participant, 10 ether);
+    ticketToken.approve(address(lottery), 10 ether);
+
+    //BUY TICKET MANTIĞI 
+    //lottery.buyTicketTx(1, hashRndNumber); // Participant buys a ticket
+
+    // Simulate the end of the lottery
+    uint;
+    lotteryWinners[0] = ticketNo; // Assume ticket #1 is a winning ticket
+
+    //TODO: LOTTERY BİTİRME MANTIĞI
+    //lottery.completeLottery(createdLotteryId, winningTickets);
+
+    // Check if the ticket won
+    bool isWinningTicket = lottery.checkIfAddrTicketWon(participant, createdLotteryId, ticketNo);
+    Assert.equal(isWinningTicket, true, "Participant's ticket should be a winner");
+
+    // Check with a non-winning ticket number
+    bool isNonWinningTicket = lottery.checkIfAddrTicketWon(participant, createdLotteryId, 999);
+    Assert.equal(isNonWinningTicket, false, "Participant's non-existent ticket should not be a winner");
+
+    // Check with an address that didn't participate
+    bool isUnrelatedWinner = lottery.checkIfAddrTicketWon(address(0x456), createdLotteryId, ticketNo);
+    Assert.equal(isUnrelatedWinner, false, "Unrelated address should not have winning tickets");
+}
+
+
 }

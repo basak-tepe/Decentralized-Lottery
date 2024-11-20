@@ -453,7 +453,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"contracts/NBGLottery.sol": "TicketToken"
+			"contracts/CompanyLotteries.sol": "TicketToken"
 		},
 		"evmVersion": "cancun",
 		"libraries": {},
@@ -507,20 +507,20 @@
 				"dweb:/ipfs/Qmax9WHBnVsZP46ZxEMNRQpLQnrdE4dK8LehML1Py8FowF"
 			]
 		},
-		"contracts/LotteryStructs.sol": {
-			"keccak256": "0xf32c0720894d5e0f6b1a244c8e4de717e8aa17facef85fd532c0e866f56ef1f2",
+		"contracts/CompanyLotteries.sol": {
+			"keccak256": "0x2210dc043a4a6c540305139616df7599b6f09f5a5a7df3cfaa96aa4db9779d75",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://3dcc2fb86e73dc033aaf1bd928cbef495de968c898415011e40abc6c0d7fe3f4",
-				"dweb:/ipfs/QmQN8uio7WhmbdRrVFVW1cYC36eepAEtUW84mBiTNKmh4w"
+				"bzz-raw://68507c1d00984b5577a44a05ca824a7a4e7e1de91e5fbffea8f85892c19c4fff",
+				"dweb:/ipfs/QmfWbwNXoyahQXtwAqEFPDhYnZ1p3DoXVnD61eachFxaSN"
 			]
 		},
-		"contracts/NBGLottery.sol": {
-			"keccak256": "0x43d18e0040234768aec1757e31c948c4426cd0a90d5ab9bc114d33a77d463812",
+		"contracts/LotteryStructs.sol": {
+			"keccak256": "0x22686519cffbcf88eb4b96ffc030661ad71261615618534aa08e98d4e5e9ecd5",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://be37f629cdcbbb79a31b2a6567164ef1a85d220b60375bc9769edb7689682ef2",
-				"dweb:/ipfs/QmcDojxZ4JyStZmANrwVyFoDKmKudYcr6J4TB8CgQ7zV5r"
+				"bzz-raw://5c820674f211e16dee8286ef6e63c1a441e2d29949af9565e8fd2d0474cbb1ee",
+				"dweb:/ipfs/QmXjzhSmWLuxoqMqQufezGwqo8RwVKc4Woz73yWZXusyBy"
 			]
 		}
 	},

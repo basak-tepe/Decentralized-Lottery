@@ -143,6 +143,19 @@
 				"type": "function"
 			},
 			{
+				"inputs": [],
+				"name": "getCurrentLotteryNo",
+				"outputs": [
+					{
+						"internalType": "uint32",
+						"name": "lotteryNo",
+						"type": "uint32"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
 				"inputs": [
 					{
 						"internalType": "uint32",
@@ -150,9 +163,9 @@
 						"type": "uint32"
 					},
 					{
-						"internalType": "uint256",
+						"internalType": "uint32",
 						"name": "lotteryNo",
-						"type": "uint256"
+						"type": "uint32"
 					}
 				],
 				"name": "getIthPurchasedTicketTx",
@@ -166,6 +179,83 @@
 						"internalType": "uint8",
 						"name": "quantity",
 						"type": "uint8"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint32",
+						"name": "lotteryNo",
+						"type": "uint32"
+					}
+				],
+				"name": "getLotteryInfo",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "unixbeg",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "noOfTickets",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "noOfWinners",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "minPercentage",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "ticketPrice",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint32",
+						"name": "lotteryNo",
+						"type": "uint32"
+					}
+				],
+				"name": "getLotterySales",
+				"outputs": [
+					{
+						"internalType": "uint32",
+						"name": "soldTickets",
+						"type": "uint32"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint32",
+						"name": "lottery_no",
+						"type": "uint32"
+					}
+				],
+				"name": "getNumPurchaseTxs",
+				"outputs": [
+					{
+						"internalType": "uint32",
+						"name": "transactions",
+						"type": "uint32"
 					}
 				],
 				"stateMutability": "view",
@@ -215,6 +305,11 @@
 						"internalType": "enum LotteryStructs.LotteryState",
 						"name": "state",
 						"type": "uint8"
+					},
+					{
+						"internalType": "uint32",
+						"name": "transactions",
+						"type": "uint32"
 					},
 					{
 						"internalType": "address",
@@ -359,19 +454,19 @@
 			]
 		},
 		"contracts/LotteryStructs.sol": {
-			"keccak256": "0xf32c0720894d5e0f6b1a244c8e4de717e8aa17facef85fd532c0e866f56ef1f2",
+			"keccak256": "0x57a0d85b71b7d1266298934d64f34e87295783d5dcfbe6102cf7fed1d655d401",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://3dcc2fb86e73dc033aaf1bd928cbef495de968c898415011e40abc6c0d7fe3f4",
-				"dweb:/ipfs/QmQN8uio7WhmbdRrVFVW1cYC36eepAEtUW84mBiTNKmh4w"
+				"bzz-raw://560f616e14c21d4f869949c7211563a0623c96ae09bf52b573856ac5ad73cb5b",
+				"dweb:/ipfs/QmYM2L135sQgcwiV9wiu5UCfeiacMdmkbpWvyHg9KArWdS"
 			]
 		},
 		"contracts/NBGLottery.sol": {
-			"keccak256": "0x43d18e0040234768aec1757e31c948c4426cd0a90d5ab9bc114d33a77d463812",
+			"keccak256": "0x1f322026fbf567aac2736435e579d0232b6db791f3330b6033f9a0f970863917",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://be37f629cdcbbb79a31b2a6567164ef1a85d220b60375bc9769edb7689682ef2",
-				"dweb:/ipfs/QmcDojxZ4JyStZmANrwVyFoDKmKudYcr6J4TB8CgQ7zV5r"
+				"bzz-raw://69c3c6e3656f57979eabba18cae7abc728a4b4b6bd5e2e20a4f791f3e8b9993a",
+				"dweb:/ipfs/QmWHWYLcBBj8pVL7YajTeou95ypuLF4DX2fgckgGDd24o4"
 			]
 		}
 	},
