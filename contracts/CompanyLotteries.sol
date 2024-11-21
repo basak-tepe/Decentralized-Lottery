@@ -47,8 +47,8 @@ contract CompanyLotteries {
 
     mapping(uint256 => LotteryStructs.LotteryInfo) public lotteries; // Mapping of lottery IDs to LotteryInfo
     mapping(uint256 => LotteryStructs.TicketInfo[]) public lotteryTickets; // Mapping of lottery IDs to an array of TicketInfo structs
-    mapping(uint256 => uint256[]) public lotteryWinners; // Mapping from lottery number to an array of winning ticket numbers
-    mapping(uint256 => uint256[]) public randomNumbers; // Mapping from lottery number to an array of random numbers
+    //mapping(uint256 => uint256[]) public lotteryWinners; // Mapping from lottery number to an array of winning ticket numbers
+    //mapping(uint256 => uint256[]) public randomNumbers; // Mapping from lottery number to an array of random numbers
     // Mapping from user address to their ticket number list for each lottery.
     /*
         addressToTickets = {
@@ -108,7 +108,8 @@ contract CompanyLotteries {
         @param ticketPrice Price of each ticket (in the NBG Token)
         @returns currentLotteryNo Lottery number of created lottery
     */
-    function createLottery(
+
+function createLottery(
         uint256 unixbeg,
         uint256 nooftickets,
         uint256 noofwinners,
@@ -139,12 +140,15 @@ contract CompanyLotteries {
             numpurchasetxs: 0,
             state: LotteryStructs.LotteryState.PURCHASE,
             erctokenaddr: address(ticketToken),
-            revealStartTime: currentTime + ((unixbeg - currentTime) / 2) // (half the time of total)
+            revealStartTime: currentTime + ((unixbeg - currentTime) / 2), // (half the time of total)
+            lotteryWinners: new uint256[](noofwinners),
+            randomNumbers: new uint256[](nooftickets)
         });
 
         emit LotteryCreated(currentLotteryNo, unixbeg, nooftickets);
         return currentLotteryNo;
     }
+
 
     /*
         TODO comment
@@ -174,7 +178,7 @@ contract CompanyLotteries {
         );
 
         // Calculate total cost
-        uint256 totalCost = quantity * lotteries[lottery_no].ticketprice;
+        //uint256 totalCost = quantity * lotteries[lottery_no].ticketprice;
         // ticketToken.transferFrom(msg.sender, owner, totalCost);
 
         // Construct a ticket with the info provided
@@ -232,7 +236,7 @@ contract CompanyLotteries {
 
         ticket.revealed = true;
         //add random number to list
-        randomNumbers[lottery_no].push(rnd_number);
+        lotteries[lottery_no].randomNumbers.push(rnd_number);
         emit RandomNumberRevealed(lottery_no, sticketno, rnd_number);
     }
 
@@ -378,8 +382,12 @@ contract CompanyLotteries {
     {
         // Check if ticketNo is in the list of winners for the lottery
         //LotteryStructs.LotteryInfo storage lottery = lotteries[lottery_no];
-        for (uint256 i = 0; i < lotteryWinners[lottery_no].length; i++) {
-            if (lotteryWinners[lottery_no][i] == ticketNo) {
+        for (
+            uint256 i = 0;
+            i < lotteries[lottery_no].lotteryWinners.length;
+            i++
+        ) {
+            if (lotteries[lottery_no].lotteryWinners[i] == ticketNo) {
                 return true;
             }
         }
@@ -393,6 +401,8 @@ contract CompanyLotteries {
         @param ticket_no Ticket number which the user wants to check. 
         @return won Whether the address has already won or not
     */
+
+    
     function checkIfAddrTicketWon(
         address addr,
         uint256 lottery_no,
@@ -406,7 +416,7 @@ contract CompanyLotteries {
         );
 
         // Get the list of winning tickets for the given lottery
-        uint256[] memory winningTickets = lotteryWinners[lottery_no];
+        uint256[] memory winningTickets = lotteries[lottery_no].lotteryWinners;
         uint256[] memory userTickets = addressToTickets[addr][lottery_no];
 
         // Check if the ticket exists in the user's list of tickets
@@ -438,7 +448,7 @@ contract CompanyLotteries {
         returns (uint256 ticketno)
     {
         // Access the winning tickets array for the specified lottery
-        uint256[] storage winningTickets = lotteryWinners[lottery_no];
+        uint256[] storage winningTickets = lotteries[lottery_no].lotteryWinners;
         // Ensure the index `i` is within bounds
         require(i < winningTickets.length, "Index out of range");
         // Retrieve the winning ticket at the specified index
@@ -452,6 +462,7 @@ contract CompanyLotteries {
     @param sticketNo The starting ticket number of the purchased batch to refund.
     Emits a RefundWithdrawn event upon successful refund.
 */
+    
     function withdrawTicketRefund(uint256 lottery_no, uint256 sticketNo)
         public
     {
@@ -530,21 +541,25 @@ contract CompanyLotteries {
         uint256 finalRandomNumber = 0;
 
         // XOR all revealed numbers to calculate the final random number
-        for (uint256 i = 0; i < randomNumbers[lottery_no].length; i++) {
-            uint256 userRandomNumber = randomNumbers[lottery_no][i];
+        for (
+            uint256 i = 0;
+            i < lotteries[lottery_no].randomNumbers.length;
+            i++
+        ) {
+            uint256 userRandomNumber = lotteries[lottery_no].randomNumbers[i];
             finalRandomNumber ^= userRandomNumber;
         }
 
         uint256 numOfWinners = lotteries[lottery_no].noofwinners;
         require(
-            numOfWinners <= randomNumbers[lottery_no].length,
+            numOfWinners <= lotteries[lottery_no].randomNumbers.length,
             "Number of winners exceeds participants"
         );
 
         // Array to store the winning ticket numbers
         winner_ticket_numbers = new uint256[](numOfWinners);
         uint256[] memory selectedIndexes = new uint256[](numOfWinners);
-        uint256 participants = randomNumbers[lottery_no].length;
+        uint256 participants = lotteries[lottery_no].randomNumbers.length;
 
         // Select unique winners
         for (uint256 i = 0; i < numOfWinners; i++) {
@@ -557,7 +572,9 @@ contract CompanyLotteries {
                 winnerIndex = (winnerIndex + 1) % participants;
             }
 
-            winner_ticket_numbers[i] = randomNumbers[lottery_no][winnerIndex];
+            winner_ticket_numbers[i] = lotteries[lottery_no].randomNumbers[
+                winnerIndex
+            ];
             selectedIndexes[i] = winnerIndex;
         }
 
