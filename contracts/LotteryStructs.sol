@@ -35,6 +35,8 @@ library LotteryStructs {
         string url;             // URL of the lottery details page (when needed)
         address erctokenaddr;   // Address of the NBG Token contract used for payments
         uint revealStartTime; // Start time for random number reveal
+        uint[] lotteryWinners;
+        uint[] randomNumbers;
     }
 
     /*

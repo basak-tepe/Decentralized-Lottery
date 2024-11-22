@@ -133,17 +133,18 @@ function createLottery(
             noofwinners: noofwinners,
             minpercentage: minpercentage,
             ticketprice: ticketprice,
-            htmlhash: htmlhash,
-            sticketno: 0,
-            url: url,
             numsold: 0,
-            numpurchasetxs: 0,
             state: LotteryStructs.LotteryState.PURCHASE,
+            numpurchasetxs: 0,
+            sticketno: 0,
+            htmlhash: htmlhash,
+            url: url,
             erctokenaddr: address(ticketToken),
             revealStartTime: currentTime + ((unixbeg - currentTime) / 2), // (half the time of total)
             lotteryWinners: new uint256[](noofwinners),
             randomNumbers: new uint256[](nooftickets)
         });
+
 
         emit LotteryCreated(currentLotteryNo, unixbeg, nooftickets);
         return currentLotteryNo;
