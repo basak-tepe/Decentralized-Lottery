@@ -95,6 +95,7 @@ contract TestCompanyLottery {
     }
     */
 
+
         // Test for getting the current lottery number
     function testGetCurrentLotteryNo() public {
         uint currentLottery = lottery.getCurrentLotteryNo();
@@ -198,6 +199,53 @@ function testCheckIfAddrTicketWon() public {
     bool isUnrelatedWinner = lottery.checkIfAddrTicketWon(address(0x456), createdLotteryId, ticketNo);
     Assert.equal(isUnrelatedWinner, false, "Unrelated address should not have winning tickets");
 }
+// Test for revealing random number transaction
+function testRevealRndNumberTx() public {
+    uint lotteryId = createdLotteryId;  // Use the lottery ID created in the testCreateLottery function
+    uint sticketNo = 0;  // Ticket number for which random number will be revealed
+    uint quantity = 1;   // Quantity of tickets
+    bytes32 rndNumber = bytes32("randomhash");  // Random number to reveal for the test
+    uint256 hash_rnd_number = uint256(rndNumber);  
+    // Mint tokens and approve ticket purchase
+    ticketToken.mint(participant, 10 ether);  // Mint tokens for participant
+    ticketToken.approve(address(lottery), 10 ether);  // Approve token for lottery contract
+
+    // Reveal the random number for the ticket
+    lottery.revealRndNumberTx(lotteryId, sticketNo, quantity, hash_rnd_number);
+
+    // Assert that the random number was revealed
+    ////Assert.equal(ticket.revealed, true, "Random number should be revealed");
+    //Assert.equal(ticket.hash_rnd_number, rndNumber, "Revealed random number should match the expected random number");
+
+    // Optionally, verify if the ticket's 'revealed' status is updated
+    //Assert.equal(ticket.revealed, true, "Ticket revealed status should be true after revealing random number");
+}
+
+    // Test for checking if a ticket won
+    function testCheckIfMyTicketWon() public {
+        uint ticketNo = 1; // Assume the ticket number is 1 for this test case
+        uint lotteryNo = createdLotteryId; // Get the created lottery ID
+        bool expectedWinnerStatus = false; // Assume ticket has not won initially
+
+        // Mint tokens and purchase the ticket
+        ticketToken.mint(participant, 10 ether);
+        ticketToken.approve(address(lottery), 10 ether);
+       // lottery.buyTicketTx(1, keccak256(abi.encodePacked("randomhash")));
+
+        // Assuming we simulate that ticket #1 has won
+        lotteryWinners.push(ticketNo);  // Add ticket #1 to the winners list
+
+        // Check if the ticket won
+        bool isWinner = lottery.checkIfMyTicketWon(lotteryNo, ticketNo);
+
+        // Assert that the ticket has won
+        Assert.equal(isWinner, true, "Ticket should be a winner");
+
+        // Check if a non-winning ticket is correctly identified
+        uint nonWinningTicketNo = 999;  // Ticket #999 does not exist
+        bool isNonWinner = lottery.checkIfMyTicketWon(lotteryNo, nonWinningTicketNo);
+        Assert.equal(isNonWinner, false, "Non-existent ticket should not be a winner");
+    }
 
 
 }
