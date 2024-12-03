@@ -191,7 +191,7 @@ function createLottery(
 
         // Calculate total cost
         //uint256 totalCost = quantity * lotteries[lottery_no].ticketprice;
-        // ticketToken.transferFrom(msg.sender, owner, totalCost);
+         //ticketToken.  (msg.sender, owner, totalCost);
 
         // Construct a ticket with the info provided
         LotteryStructs.TicketInfo memory ticket = LotteryStructs.TicketInfo({

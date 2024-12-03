@@ -18,7 +18,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"contracts/LotteryStructs.sol": "LotteryStructs"
+			"contracts/UpdatedContact/LotteryStructs.sol": "LotteryStructs"
 		},
 		"evmVersion": "cancun",
 		"libraries": {},
@@ -32,12 +32,12 @@
 		"remappings": []
 	},
 	"sources": {
-		"contracts/LotteryStructs.sol": {
-			"keccak256": "0xef5b386cb954ba91152c125a85c7d178e6eb5a3b91cd78518ad65e2035d80d67",
+		"contracts/UpdatedContact/LotteryStructs.sol": {
+			"keccak256": "0x52d973ac4a00b65a724e0f677da59f47b918754807ec5993752087fa12e02281",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://ba3acd37311cd8a122c83526eb4594c23b0b428befaa450a2293b89bc00f415a",
-				"dweb:/ipfs/QmcbDNeW75N1XVY8Z9GNLXWapGT1hdsd6JXWWruZcNwiW1"
+				"bzz-raw://a2a5f080984a1cb6cfadd6a6de0a23d481bba2a2b4bb7c5e0d94d0924dc152d9",
+				"dweb:/ipfs/QmUUb8jpZLLmtfdoDryM1ppffAgYzFdjGN4sm41uuYke1D"
 			]
 		}
 	},
