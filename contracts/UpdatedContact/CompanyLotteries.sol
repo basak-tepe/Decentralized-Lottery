@@ -131,9 +131,9 @@ contract CompanyLotteries {
         );
 
         // Calculate total cost and transfer token from user to the company account.
-        //uint256 totalCost = quantity * lotteries[arrayIndex].ticketprice;
+        uint256 totalCost = quantity * lotteries[arrayIndex].ticketprice;
         // Transfer token from  msg.sender to company address.
-        //ticketToken.transferFrom(msg.sender, address(this), totalCost);
+        ticketToken.transferFrom(msg.sender, address(this), totalCost);
 
         lotteries[arrayIndex].numsold += quantity;
         //update purchase transactions
@@ -338,7 +338,7 @@ contract CompanyLotteries {
         // Ensure the caller reveals its random number at reveal stage
         require(
             lotteryTickets[lottery_no][sticket_no].revealed == true, 
-            "You did not submitted your random number "
+            "You did not revealed your random number "
             );
 
         // Ensure the ticket hasn't been refunded already
