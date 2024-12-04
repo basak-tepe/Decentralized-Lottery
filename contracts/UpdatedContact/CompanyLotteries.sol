@@ -10,13 +10,16 @@ import "./TicketToken.sol";
     It also includes functionality for updating lottery states, revealing winners, and handling refunds in case of cancellations.
 */
 contract CompanyLotteries {
+    
     using LotteryStructs for *; // Using the Lottery, Ticket structs and LotteryState enum
 
-    TicketToken public ticketToken;
+    TicketToken public ticketToken;  
     address public tokenAddress;  // NBG token address
 
     address public owner;
     uint256 public currentLotteryNo;
+
+    // Arrays of lottery IDs to Lottery
     LotteryStructs.Lottery[] lotteries;
     // Mapping of lottery IDs to an array of Ticket structs
     mapping(uint256 => LotteryStructs.Ticket[]) public lotteryTickets; 
@@ -37,8 +40,8 @@ contract CompanyLotteries {
         _;
     }
 
-    // Events
-    event LotteryCreated(uint lottery_no, uint unixbeg, uint nooftickets); // Track created lotteries
+    // Event to track created lotteries
+    event LotteryCreated(uint lottery_no, uint unixbeg, uint nooftickets); 
 
     // Event to notify that winners have been determined
     event WinnersDetermined(uint256 lottery_no, uint256[] winners);
@@ -64,9 +67,9 @@ contract CompanyLotteries {
 
     require(noofwinners > 0, "At least one winner required!");
     require(minpercentage <= 100, "Min participation cannot exceed 100!");
-    
     uint256 currenttime = block.timestamp;
     require(unixbeg > currenttime, "Lottery end time must be in the future.");
+
     currentLotteryNo++;
 
     lotteries.push(LotteryStructs.Lottery({
@@ -200,12 +203,9 @@ contract CompanyLotteries {
     @return sTicketNo Sold ticket no
     @return quantity Quantity of tickets sold
     */
-    function getIthPurchasedTicketTx(uint i, uint lottery_no) public view returns (uint sticketno, uint quantity) {
-        require(lottery_no > 0,"Lottery number cannot be zero!" );
-        // Adjust lottery array index
-        uint arrayIndex = lottery_no-1;           
+    function getIthPurchasedTicketTx(uint i, uint lottery_no) public view returns (uint sticketno, uint quantity) {         
         // Check if the number of ticket is more than total ticket sold
-        require(i < lotteryTickets[arrayIndex].length, "Index out of range");
+        require(i <= lotteryTickets[lottery_no].length, "Index out of range");
         // Access the ticket information
         LotteryStructs.Ticket storage ticket = lotteryTickets[lottery_no][i];
         return (i, ticket.quantity);
@@ -223,6 +223,11 @@ contract CompanyLotteries {
         // Adjust lottery array index
         uint arrayIndex = lottery_no-1;  
         require(lottery_no <= currentLotteryNo, "Invalid lottery number");
+         require(
+            lotteries[arrayIndex].state == LotteryStructs.LotteryState.COMPLETED,
+            "Lottery is not COMPLETED state"
+        );
+        
         require(
             ticket_no < lotteryTickets[lottery_no].length,
             "Invalid ticket number"
