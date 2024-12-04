@@ -521,33 +521,31 @@ contract CompanyLotteries {
     function updateLotteryStates() public {
         uint256 currentTime = block.timestamp;
 
-        for (uint256 i = 1; i <= currentLotteryNo; i++) {
-            LotteryStructs.Lottery storage lottery = lotteries[i];
-
-            if (lottery.state == LotteryStructs.LotteryState.PURCHASE) {
+        for (uint256 i = 0; i < currentLotteryNo; i++) {
+            if ( lotteries[i].state == LotteryStructs.LotteryState.PURCHASE) {
                 // Transition to REVEAL if revealStartTime is reached
-                if (currentTime >= lottery.revealStartTime) {
-                    lottery.state = LotteryStructs.LotteryState.REVEAL;
+                if (currentTime >=  lotteries[i].revealStartTime) {
+                    lotteries[i].state = LotteryStructs.LotteryState.REVEAL;
                 }
-            } else if (lottery.state == LotteryStructs.LotteryState.REVEAL) {
+            } else if ( lotteries[i].state == LotteryStructs.LotteryState.REVEAL) {
                 // Transition to COMPLETED if enough tickets sold, else CANCELLED
-                if (currentTime >= lottery.unixbeg) {
-                    uint256 minTicketsRequired = (lottery.nooftickets * lottery.minpercentage) / 100;
-                    if (lottery.numsold >= minTicketsRequired) {
-                        lottery.state = LotteryStructs.LotteryState.COMPLETED;
+                if (currentTime >=  lotteries[i].unixbeg) {
+                    uint256 minTicketsRequired = ( lotteries[i].nooftickets *  lotteries[i].minpercentage) / 100;
+                    if ( lotteries[i].numsold >= minTicketsRequired) {
+                         lotteries[i].state = LotteryStructs.LotteryState.COMPLETED;
                     } else {
-                        lottery.state = LotteryStructs.LotteryState.CANCELLED;
+                         lotteries[i].state = LotteryStructs.LotteryState.CANCELLED;
                     }
                 }
             } else if (
-                lottery.state == LotteryStructs.LotteryState.PURCHASE ||
-                lottery.state == LotteryStructs.LotteryState.REVEAL
-            ) {
+                 lotteries[i].state == LotteryStructs.LotteryState.PURCHASE ||
+                 lotteries[i].state == LotteryStructs.LotteryState.REVEAL)
+            {
                 // Cancel lotteries if end time passed and they haven't transitioned
-                if (currentTime >= lottery.unixbeg) {
-                    uint256 minTicketsRequired = (lottery.nooftickets * lottery.minpercentage) / 100;
-                    if (lottery.numsold < minTicketsRequired) {
-                        lottery.state = LotteryStructs.LotteryState.CANCELLED;
+                if (currentTime >=  lotteries[i].unixbeg) {
+                    uint256 minTicketsRequired = ( lotteries[i].nooftickets * lotteries[i].minpercentage) / 100;
+                    if ( lotteries[i].numsold < minTicketsRequired) {
+                         lotteries[i].state = LotteryStructs.LotteryState.CANCELLED;
                     }
                 }
             }
