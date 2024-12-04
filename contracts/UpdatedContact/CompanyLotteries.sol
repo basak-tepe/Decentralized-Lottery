@@ -575,13 +575,7 @@ contract CompanyLotteries {
     }
 
    /*
-        Retrieves the essential information about a specific lottery based on its unique lottery ID
-        @param lottery_no The ID of the lottery whose information is being requested
-        @return unixbeg Start time of the lottery (in Unix timestamp)
-        @return noOfTickets Total number of tickets in the lottery
-        @return noOfWinners Number of winners to be selected
-        @return minPercentage Minimum percentage of tickets to be sold for the lottery to be valid
-        @return ticketPrice Price of each ticket (in the NBG Token)
+        Helper Function
     */
     function getLotteryState(uint256 lottery_no) public view
         returns (
