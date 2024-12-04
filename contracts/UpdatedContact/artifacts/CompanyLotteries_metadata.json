@@ -409,6 +409,80 @@
 						"internalType": "uint256",
 						"name": "",
 						"type": "uint256"
+					}
+				],
+				"name": "lotteries",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "unixbeg",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "nooftickets",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "noofwinners",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "minpercentage",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "ticketprice",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "htmlhash",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "string",
+						"name": "url",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "revealStartTime",
+						"type": "uint256"
+					},
+					{
+						"internalType": "enum LotteryStructs.LotteryState",
+						"name": "state",
+						"type": "uint8"
+					},
+					{
+						"internalType": "uint256",
+						"name": "numsold",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "numpurchasetxs",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "currentRandom",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
 					},
 					{
 						"internalType": "uint256",
@@ -470,11 +544,6 @@
 					{
 						"internalType": "uint256",
 						"name": "sticketno",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "quantity",
 						"type": "uint256"
 					},
 					{
@@ -638,11 +707,11 @@
 			]
 		},
 		"contracts/UpdatedContact/CompanyLotteries.sol": {
-			"keccak256": "0x66b0d11ea94ff185efb8535a9054be6d5173ff26f20f67305f7341f785653ecc",
+			"keccak256": "0xdeae6f56bf6deb286057fbc37f0d9529ae1895f0b8b295a08e85de0df6060635",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://4d51e73da5717341bd9445e36b52cde6fda3b9da17c0faee379c9d1f9c32f023",
-				"dweb:/ipfs/QmZWwtdjjGH1W7U3ExtKrBnXB3JBEm7AosUjuRHHAVq5AF"
+				"bzz-raw://bb1af96a450ab6d9edd07723ce5d8c39402582c0d640e96248db866efc151697",
+				"dweb:/ipfs/QmXuPBigArgWeYj1D13YTy471nF1L35RFTYuiW9YbHqokN"
 			]
 		},
 		"contracts/UpdatedContact/LotteryStructs.sol": {

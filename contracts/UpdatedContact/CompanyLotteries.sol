@@ -20,7 +20,7 @@ contract CompanyLotteries {
     uint256 public currentLotteryNo;
 
     // Arrays of lottery IDs to Lottery
-    LotteryStructs.Lottery[] lotteries;
+    LotteryStructs.Lottery[]  public lotteries;
     // Mapping of lottery IDs to an array of Ticket structs
     mapping(uint256 => LotteryStructs.Ticket[]) public lotteryTickets; 
 
@@ -65,10 +65,10 @@ contract CompanyLotteries {
         string memory url
     ) public onlyOwner returns (uint lottery_no) {
 
-    require(noofwinners > 0, "At least one winner required!");
-    require(minpercentage <= 100, "Min participation cannot exceed 100!");
+    require(noofwinners > 0);
+    require(minpercentage <= 100);
     uint256 currenttime = block.timestamp;
-    require(unixbeg > currenttime, "Lottery end time must be in the future.");
+    require(unixbeg > currenttime);
 
     currentLotteryNo++;
 
@@ -109,7 +109,7 @@ contract CompanyLotteries {
         bytes32 hash_rnd_number
     ) public returns (uint sticketno) {
 
-        require(lottery_no > 0,"Lottery number cannot be zero!" );
+        require(lottery_no > 0);
         // Adjust lottery array index
         uint arrayIndex = lottery_no-1;   
         // Check if the lottery is active, lottery is finished, and are there enough tickets to sold
@@ -131,7 +131,7 @@ contract CompanyLotteries {
         );
 
         // Calculate total cost and transfer token from user to the company account.
-        uint256 totalCost = quantity * lotteries[arrayIndex].ticketprice;
+        //uint256 totalCost = quantity * lotteries[arrayIndex].ticketprice;
         // Transfer token from  msg.sender to company address.
         //ticketToken.transferFrom(msg.sender, address(this), totalCost);
 
@@ -160,10 +160,10 @@ contract CompanyLotteries {
     function revealRndNumberTx(
         uint lottery_no,
         uint sticketno,
-        uint quantity,
+        //uint quantity,
         uint rnd_number
     ) public {
-        require(lottery_no > 0,"Lottery number cannot be zero!" );
+        require(lottery_no > 0 );
         // Adjust lottery array index
         uint arrayIndex = lottery_no-1;   
         require(
@@ -180,7 +180,7 @@ contract CompanyLotteries {
         bytes32 hash_rnd_number = keccak256(abi.encodePacked(rnd_number));
         require(
             (lotteryTickets[lottery_no][sticketno].hash == keccak256(abi.encodePacked(hash_rnd_number, msg.sender))),
-            "You revealed a wrong number, make sure to reveal the number you submitted"
+            "You revealed a wrong number"
         );
         lotteryTickets[lottery_no][sticketno].revealed = true;
         // To determine the winners fairly
@@ -193,7 +193,7 @@ contract CompanyLotteries {
     @return numpurchasetxs Number of transactions
     */
     function getNumPurchaseTxs(uint lottery_no) public view returns (uint numpurchasetxs) {
-        require(lottery_no > 0,"Lottery number cannot be zero!" );
+        require(lottery_no > 0);
         // Adjust lottery array index
         uint arrayIndex = lottery_no-1;   
         return lotteries[arrayIndex].numpurchasetxs;
@@ -209,7 +209,7 @@ contract CompanyLotteries {
     */
     function getIthPurchasedTicketTx(uint i, uint lottery_no) public view returns (uint sticketno, uint quantity) {         
         // Check if the number of ticket is more than total ticket sold
-        require(i <= lotteryTickets[lottery_no].length, "Index out of range");
+        require(i <= lotteryTickets[lottery_no].length);
         // Access the ticket information
         LotteryStructs.Ticket storage ticket = lotteryTickets[lottery_no][i];
         return (i, ticket.quantity);
@@ -223,7 +223,7 @@ contract CompanyLotteries {
     @return won A boolean indicating whether the specified ticket has won.   
     */
     function checkIfMyTicketWon(uint lottery_no, uint ticket_no) public view returns (bool won) {
-        require(lottery_no > 0,"Lottery number cannot be zero!" );
+        require(lottery_no > 0);
         // Adjust lottery array index
         uint arrayIndex = lottery_no-1;  
         require(lottery_no <= currentLotteryNo, "Invalid lottery number");
@@ -243,7 +243,7 @@ contract CompanyLotteries {
         require(ticket.owner == msg.sender, "You do not own this ticket");
         require(
             ticket.revealed == true ,
-            "You did not submitted your random number correctly in the reveal stage! The chance of winning is lost. "
+            "You did not submitted your random number. "
         );
 
         // Check if ticketNo is in the list of winners for the lottery
@@ -263,15 +263,15 @@ contract CompanyLotteries {
     @return won A boolean indicating whether the specified ticket has won.
     */
     function checkIfAddrTicketWon(address addr, uint lottery_no, uint ticket_no) public view returns (bool won){
-        require(lottery_no > 0,"Lottery number cannot be zero!" );
+        require(lottery_no > 0);
         // Adjust lottery array index
         uint arrayIndex = lottery_no-1;  
-        require(lottery_no <= currentLotteryNo, "Invalid lottery number");
-        require(ticket_no <= lotteryTickets[lottery_no].length,"Invalid ticket number");
+        require(lottery_no <= currentLotteryNo);
+        require(ticket_no <= lotteryTickets[lottery_no].length);
 
         require(
             lotteryTickets[lottery_no][ticket_no].revealed == true ,
-            "The address was not submitted its random number correctly in the reveal stage! The chance of winning is lost. "
+            "The address was not submitted its random number. "
         );
         // Check if ticketNo is in the list of winners for the lottery
         for (uint256 i = 0; i < lotteries[lottery_no].lotteryWinners.length;i++) {
@@ -293,16 +293,16 @@ contract CompanyLotteries {
     @return ticketno The ticket number of the i-th winner.
     */
     function getIthWinningTicket(uint lottery_no, uint i) public view returns (uint ticketno) {
-        require(lottery_no > 0,"Lottery number cannot be zero!" );
+        require(lottery_no > 0);
         // Adjust lottery array index
         uint arrayIndex = lottery_no-1;  
-        require(lottery_no <= currentLotteryNo, "Invalid lottery number");
+        require(lottery_no <= currentLotteryNo);
         require(
             lotteries[arrayIndex].state == LotteryStructs.LotteryState.COMPLETED,
             "Lottery has not been completed"
         );
         // Ensure the i-th winner index is within the number of winners
-        require(i > 0 && i <= lotteries[arrayIndex].noofwinners, "Invalid winner index");
+        require(i > 0 && i <= lotteries[arrayIndex].noofwinners);
         // Adjust index to match array (0-based index)
         uint winnerIndex = i - 1;
         // Retrieve the winning ticket's index
@@ -316,11 +316,11 @@ contract CompanyLotteries {
     @param sticket_no The ticket number for which the refund is being claimed.
     */
     function withdrawTicketRefund(uint lottery_no, uint sticket_no) public {
-        require(lottery_no > 0,"Lottery number cannot be zero!" );
+        require(lottery_no > 0 );
         // Adjust lottery array index
         uint arrayIndex = lottery_no-1;    
 
-        require(lottery_no <= currentLotteryNo, "Invalid lottery number");
+        require(lottery_no <= currentLotteryNo);
 
         LotteryStructs.Lottery storage lottery = lotteries[arrayIndex];
 
@@ -330,26 +330,26 @@ contract CompanyLotteries {
             "Refunds not available for this lottery"
         );
 
-        require(sticket_no < lotteryTickets[lottery_no].length, "Invalid ticket number");
+        require(sticket_no < lotteryTickets[lottery_no].length);
 
         // Ensure the caller owns the ticket
-        require(lotteryTickets[lottery_no][sticket_no].owner == msg.sender, "Caller is not the owner of this ticket");
+        require(lotteryTickets[lottery_no][sticket_no].owner == msg.sender, "Not owner");
 
         // Ensure the caller reveals its random number at reveal stage
         require(
             lotteryTickets[lottery_no][sticket_no].revealed == true, 
-            "You did not submitted your random number correctly in the reveal stage! The refund right is lost. "
+            "You did not submitted your random number "
             );
 
         // Ensure the ticket hasn't been refunded already
-        require(!lotteryTickets[lottery_no][sticket_no].redeemed, "Ticket already refunded");
+        require(!lotteryTickets[lottery_no][sticket_no].redeemed, "already refunded");
 
         // Calculate refund amount
         uint256 refundAmount = lotteryTickets[lottery_no][sticket_no].quantity * lottery.ticketprice;
         // Mark the ticket as redeemed
         lotteryTickets[lottery_no][sticket_no].redeemed = true;
         // Transfer refund to the ticket owner
-        require(ticketToken.transfer(msg.sender, refundAmount), "Refund transfer failed");
+        require(ticketToken.transfer(msg.sender, refundAmount), "Refund failed");
 
     }
 
@@ -368,8 +368,8 @@ contract CompanyLotteries {
     */
     function withdrawTicketProceeds(uint lottery_no) public onlyOwner {
         // Ensure the lottery exists and is completed
-        require(lottery_no <= currentLotteryNo, "Invalid lottery number");
-        require(lottery_no > 0,"Lottery number cannot be zero!" );
+        require(lottery_no <= currentLotteryNo);
+        require(lottery_no > 0);
         // Adjust lottery array index
         uint arrayIndex = lottery_no-1;  
         require(
@@ -384,10 +384,10 @@ contract CompanyLotteries {
 
         // Ensure the contract has sufficient funds
         uint256 contractBalance = ticketToken.balanceOf(address(this));
-        require(contractBalance >= totalProceeds, "Insufficient funds in contract");
+        require(contractBalance >= totalProceeds, "Insufficient funds");
 
         // Transfer the ticket proceeds to the contract owner
-        require(ticketToken.transfer(owner, totalProceeds), "Proceeds transfer failed");
+        require(ticketToken.transfer(owner, totalProceeds), "transfer failed");
     }
 
 
@@ -396,7 +396,7 @@ contract CompanyLotteries {
     @param erctokenaddr The address of the new ERC20 token contract to be used for ticket payments.
     */
     function setPaymentToken(address erctokenaddr) public onlyOwner {
-        require(erctokenaddr != address(0), "Invalid token address");
+        require(erctokenaddr != address(0));
         // Set the new ERC20 token address
         ticketToken = TicketToken(erctokenaddr);
     }
@@ -408,7 +408,7 @@ contract CompanyLotteries {
     */
     function getPaymentToken(uint lottery_no) public view returns (address erctokenaddr) {
         // Ensure the lottery exists
-        require(lottery_no <= currentLotteryNo, "Invalid lottery number");
+        require(lottery_no <= currentLotteryNo);
         // Return the ERC20 token address used for ticket purchases in the specified lottery
         erctokenaddr = address(ticketToken);
     }
@@ -432,8 +432,8 @@ contract CompanyLotteries {
         )
     {    
         // Ensure the lottery exists
-        require(lottery_no <= currentLotteryNo, "Invalid lottery number");
-        require(lottery_no > 0,"Lottery number cannot be zero!" );
+        require(lottery_no <= currentLotteryNo);
+        require(lottery_no > 0);
         // Adjust lottery array index
         uint arrayIndex = lottery_no-1;  
         // Access the LotteryInfo struct for the specified lottery number
@@ -459,8 +459,8 @@ contract CompanyLotteries {
     */
     function getLotteryURL(uint lottery_no) public view returns (bytes32 htmlhash, string memory url) {
         // Ensure the lottery exists
-        require(lottery_no <= currentLotteryNo, "Invalid lottery number");
-        require(lottery_no > 0,"Lottery number cannot be zero!" );
+        require(lottery_no <= currentLotteryNo);
+        require(lottery_no > 0 );
         // Adjust lottery array index
         uint arrayIndex = lottery_no-1;  
         LotteryStructs.Lottery storage lottery = lotteries[arrayIndex];
@@ -474,8 +474,8 @@ contract CompanyLotteries {
     */
     function getLotterySales(uint lottery_no) public view returns (uint numsold)
     {   // Ensure the lottery exists
-        require(lottery_no <= currentLotteryNo, "Invalid lottery number");
-        require(lottery_no > 0,"Lottery number cannot be zero!" );
+        require(lottery_no <= currentLotteryNo);
+        require(lottery_no > 0 );
         // Adjust lottery array index
         uint arrayIndex = lottery_no-1;  
         return lotteries[arrayIndex].numsold;
@@ -489,16 +489,16 @@ contract CompanyLotteries {
     */
     function determineWinners(uint256 lottery_no) external onlyOwner {
         // Ensure the lottery exists
-        require(lottery_no <= currentLotteryNo, "Invalid lottery number");
-        require(lottery_no > 0,"Lottery number cannot be zero!" );
+        require(lottery_no <= currentLotteryNo);
+        require(lottery_no > 0);
         // Adjust lottery array index
         uint arrayIndex = lottery_no-1;  
         // Ensure lottery is in the appropriate state
-        require(lotteries[arrayIndex].state == LotteryStructs.LotteryState.COMPLETED, "Lottery has not been completed");
+        require(lotteries[arrayIndex].state == LotteryStructs.LotteryState.COMPLETED, "Not been completed");
 
         // Ensure enough tickets were sold if a minimum percentage is required
         uint256 minTicketsRequired = (lotteries[arrayIndex].nooftickets * lotteries[arrayIndex].minpercentage) / 100;
-        require(lotteries[arrayIndex].numsold >= minTicketsRequired, "Not enough tickets sold to determine winners");
+        require(lotteries[arrayIndex].numsold >= minTicketsRequired, "Not enough tickets sold");
 
         uint256 totalTickets = lotteries[arrayIndex].numsold;
         uint256 numWinners = lotteries[arrayIndex].noofwinners;
