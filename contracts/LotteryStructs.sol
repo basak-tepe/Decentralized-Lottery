@@ -34,7 +34,7 @@ library LotteryStructs {
         bytes32 htmlhash;       // Hash of the lottery details page (will be used for off-chain data verification)
         string url;             // URL of the lottery details page (when needed)
         address erctokenaddr;   // Address of the NBG Token contract used for payments
-        uint revealStartTime; // Start time for random number reveal
+        uint revealStartTime;   // Start time for random number reveal
         uint[] lotteryWinners;
         uint[] randomNumbers;
     }

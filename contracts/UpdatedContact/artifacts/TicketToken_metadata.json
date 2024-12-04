@@ -169,7 +169,7 @@
 				"outputs": [
 					{
 						"internalType": "uint256",
-						"name": "remaining",
+						"name": "",
 						"type": "uint256"
 					}
 				],
@@ -185,7 +185,7 @@
 					},
 					{
 						"internalType": "uint256",
-						"name": "amount",
+						"name": "value",
 						"type": "uint256"
 					}
 				],
@@ -212,7 +212,7 @@
 				"outputs": [
 					{
 						"internalType": "uint256",
-						"name": "balance",
+						"name": "",
 						"type": "uint256"
 					}
 				],
@@ -275,12 +275,12 @@
 				"inputs": [
 					{
 						"internalType": "address",
-						"name": "_to",
+						"name": "to",
 						"type": "address"
 					},
 					{
 						"internalType": "uint256",
-						"name": "amount",
+						"name": "value",
 						"type": "uint256"
 					}
 				],
@@ -299,17 +299,17 @@
 				"inputs": [
 					{
 						"internalType": "address",
-						"name": "_from",
+						"name": "from",
 						"type": "address"
 					},
 					{
 						"internalType": "address",
-						"name": "_to",
+						"name": "to",
 						"type": "address"
 					},
 					{
 						"internalType": "uint256",
-						"name": "amount",
+						"name": "value",
 						"type": "uint256"
 					}
 				],
@@ -393,6 +393,9 @@
 				"allowance(address,address)": {
 					"details": "See {IERC20-allowance}."
 				},
+				"approve(address,uint256)": {
+					"details": "See {IERC20-approve}. NOTE: If `value` is the maximum `uint256`, the allowance is not updated on `transferFrom`. This is semantically equivalent to an infinite approval. Requirements: - `spender` cannot be the zero address."
+				},
 				"balanceOf(address)": {
 					"details": "See {IERC20-balanceOf}."
 				},
@@ -407,6 +410,12 @@
 				},
 				"totalSupply()": {
 					"details": "See {IERC20-totalSupply}."
+				},
+				"transfer(address,uint256)": {
+					"details": "See {IERC20-transfer}. Requirements: - `to` cannot be the zero address. - the caller must have a balance of at least `value`."
+				},
+				"transferFrom(address,address,uint256)": {
+					"details": "See {IERC20-transferFrom}. Skips emitting an {Approval} event indicating an allowance update. This is not required by the ERC. See {xref-ERC20-_approve-address-address-uint256-bool-}[_approve]. NOTE: Does not update the allowance if the current allowance is the maximum `uint256`. Requirements: - `from` and `to` cannot be the zero address. - `from` must have a balance of at least `value`. - the caller must have allowance for ``from``'s tokens of at least `value`."
 				}
 			},
 			"version": 1
@@ -474,11 +483,11 @@
 			]
 		},
 		"contracts/UpdatedContact/TicketToken.sol": {
-			"keccak256": "0x0cff6af5800ec2891c1ff8f3a117b25f17c5febeee9ebbeb85d754d3305e293e",
+			"keccak256": "0xc65ec21219c5a7181e81a2f10b7c15995a9da8c8c1375fb0887d3ba93f00f380",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://6c9faa79ada5f800996a9a9865cf9c5a109bbc5992e9a1f86cc69f2c3354285e",
-				"dweb:/ipfs/QmX25japoh6f5PuU3MZHQ4B4AZe7iXrKpBB9Cv7p6y5M4v"
+				"bzz-raw://fcd405fee615c0be358e7e03d884105047046830dc2fd835c3c4d82ba5951e75",
+				"dweb:/ipfs/QmbbGCSj5TxvD26FQuKWwVi6R8Ja8jVsWuR7nvFQrWir4F"
 			]
 		}
 	},

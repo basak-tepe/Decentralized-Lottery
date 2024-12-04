@@ -30,13 +30,11 @@ library LotteryStructs {
         bytes32 htmlhash;       // Hash of the contents of the html page that describes the lottery.
         string url;             // URL of the html page that describes the lottery
         uint  revealStartTime;  // Start time for random number reveal
-        bool exists;            // TO avoid unintentionally modifying a nonexistent lottery entry.
         LotteryState state;     // Current state of the lottery
         uint numsold;           // Number of tickets sold
         uint numpurchasetxs;    // Number of purchase transactions.
         uint currentRandom;     // To determine winners.
-        uint[] lotteryWinners;
-        Ticket[] tickets;       
+        uint[] lotteryWinners; 
 
     }
 

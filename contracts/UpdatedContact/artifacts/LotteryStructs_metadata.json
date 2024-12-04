@@ -33,11 +33,11 @@
 	},
 	"sources": {
 		"contracts/UpdatedContact/LotteryStructs.sol": {
-			"keccak256": "0x52d973ac4a00b65a724e0f677da59f47b918754807ec5993752087fa12e02281",
+			"keccak256": "0x140609829492316b9e9b5ae770e27ba05c30644099befdd66ce046833d6d707f",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://a2a5f080984a1cb6cfadd6a6de0a23d481bba2a2b4bb7c5e0d94d0924dc152d9",
-				"dweb:/ipfs/QmUUb8jpZLLmtfdoDryM1ppffAgYzFdjGN4sm41uuYke1D"
+				"bzz-raw://deec08077f2f970576fdefe795280f70e4859e2336e0e8830919ff4e647b137c",
+				"dweb:/ipfs/Qmaqw2AXL5XyVdPouV64UYHgMuKjkF8HVXMB7y1gdgiqeY"
 			]
 		}
 	},

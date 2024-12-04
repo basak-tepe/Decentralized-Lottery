@@ -16,6 +16,7 @@ contract CompanyLotteries {
     address public owner;
     uint256 public currentLotteryNo;
     LotteryStructs.Lottery[] lotteries;
+    mapping(uint256 => LotteryStructs.Ticket[]) public lotteryTickets; // Mapping of lottery IDs to an array of TicketInfo structs
     /*
     Sets the owner and initializes TicketToken contract.
     @param _ticketTokenAddress address of the deployed TicketToken contract
@@ -55,33 +56,36 @@ contract CompanyLotteries {
         bytes32 htmlhash,
         string memory url
     ) public onlyOwner returns (uint lottery_no) {
-        require(noofwinners > 0, "At least one winner required!");
-        require(minpercentage <= 100, "Min participation cannot exceed 100!");
-        //Set and control time limits.
-        uint256 currenttime = block.timestamp;
-        require(unixbeg > currenttime,"Lottery end time must be in the future.");
-        currentLotteryNo++;
-        // Initialize lottery with given paramaters.
-        lotteries[currentLotteryNo].unixbeg = unixbeg ;
-        lotteries[currentLotteryNo].nooftickets = nooftickets ;
-        lotteries[currentLotteryNo].noofwinners = noofwinners ;
-        lotteries[currentLotteryNo].minpercentage = minpercentage ;
-        lotteries[currentLotteryNo].ticketprice = ticketprice ;
-        lotteries[currentLotteryNo].htmlhash = htmlhash ;
-        lotteries[currentLotteryNo].url = url ;
-        lotteries[currentLotteryNo].revealStartTime = currenttime + ((unixbeg - currenttime) / 2); // (half the time of total)
-        lotteries[currentLotteryNo].exists = true ;
-        lotteries[currentLotteryNo].state = LotteryStructs.LotteryState.PURCHASE ;
-        lotteries[currentLotteryNo].numsold = 0 ;
-        lotteries[currentLotteryNo].numpurchasetxs = 0 ;
-        lotteries[currentLotteryNo].currentRandom = 0 ;
-        lotteries[currentLotteryNo].lotteryWinners= new uint256[](noofwinners);
+
+    require(noofwinners > 0, "At least one winner required!");
+    require(minpercentage <= 100, "Min participation cannot exceed 100!");
     
-        emit LotteryCreated(currentLotteryNo, unixbeg, nooftickets);
+    uint256 currenttime = block.timestamp;
+    require(unixbeg > currenttime, "Lottery end time must be in the future.");
+    currentLotteryNo++;
 
-        return currentLotteryNo;
+    lotteries.push(LotteryStructs.Lottery({
+        unixbeg: unixbeg,
+        nooftickets: nooftickets,
+        noofwinners: noofwinners,
+        minpercentage: minpercentage,
+        ticketprice: ticketprice,
+        htmlhash: htmlhash,
+        url: url,
+        revealStartTime: currenttime + ((unixbeg - currenttime) / 2),  // half the time of total
+        state: LotteryStructs.LotteryState.PURCHASE,
+        numsold: 0,
+        numpurchasetxs: 0,
+        currentRandom: 0,
+        lotteryWinners: new uint256[](noofwinners)  // Initialize winners array with the number of winners
+    }));
+
+   
+    emit LotteryCreated(currentLotteryNo, unixbeg, nooftickets);
+
+    return currentLotteryNo;
+
     }
-
   /*
     Allows a user to purchase tickets for a specified lottery.
     This function ensures the lottery is active, there are enough tickets available, 
@@ -112,7 +116,6 @@ contract CompanyLotteries {
             "Not enough tickets available"
         );
 
-        sticketno =  uint32(lotteries[lottery_no].tickets.length);
 
         // Calculate total cost and transfer token from user to the company account.
         uint256 totalCost = quantity * lotteries[lottery_no].ticketprice;
@@ -122,14 +125,14 @@ contract CompanyLotteries {
         //update purchase transactions
         lotteries[lottery_no].numpurchasetxs += 1;
 
-        lotteries[lottery_no].tickets.push(LotteryStructs.Ticket({
+        lotteryTickets[lottery_no].push(LotteryStructs.Ticket({
             owner: msg.sender,
             quantity: quantity,
             hash: keccak256(abi.encodePacked(hash_rnd_number, sticketno, quantity, msg.sender)),
             revealed: false,
             redeemed: false
         }));
-
+    sticketno =  uint32(lotteryTickets[lottery_no].length);
         
     }
 
@@ -148,15 +151,15 @@ contract CompanyLotteries {
         uint rnd_number
     ) public {
         require(
-            sticketno < lotteries[lottery_no].tickets.length,
+            sticketno < lotteryTickets[lottery_no].length,
             "Ticket does not exist"
         );
         // Verify that hash of provided rnd_number matches the committed hash
         require(
-            (lotteries[lottery_no].tickets[sticketno].hash == keccak256(abi.encodePacked(rnd_number, lottery_no, sticketno, msg.sender))),
+            (lotteryTickets[lottery_no][sticketno].hash == keccak256(abi.encodePacked(rnd_number, lottery_no, sticketno, msg.sender))),
             "You revealed a wrong number, make sure to reveal the number you submitted"
         );
-        lotteries[lottery_no].tickets[sticketno].revealed = true;
+        lotteryTickets[lottery_no][sticketno].revealed = true;
         lotteries[lottery_no].currentRandom ^= rnd_number;
     }
 
@@ -179,9 +182,9 @@ contract CompanyLotteries {
     */
     function getIthPurchasedTicketTx(uint i, uint lottery_no) public view returns (uint sticketno, uint quantity) {
         // Check if the number of ticket is more than total ticket sold
-        require(i < lotteries[lottery_no].tickets.length, "Index out of range");
+        require(i < lotteryTickets[lottery_no].length, "Index out of range");
         // Access the ticket information
-        LotteryStructs.Ticket storage ticket = lotteries[lottery_no].tickets[i];
+        LotteryStructs.Ticket storage ticket = lotteryTickets[lottery_no][i];
         return (i, ticket.quantity);
     }
 
@@ -195,10 +198,10 @@ contract CompanyLotteries {
     function checkIfMyTicketWon(uint lottery_no, uint ticket_no) public view returns (bool won) {
         require(lottery_no <= currentLotteryNo, "Invalid lottery number");
         require(
-            ticket_no < lotteries[lottery_no].tickets.length,
+            ticket_no < lotteryTickets[lottery_no].length,
             "Invalid ticket number"
         );
-        LotteryStructs.Ticket storage ticket = lotteries[lottery_no].tickets[ticket_no];
+        LotteryStructs.Ticket storage ticket = lotteryTickets[lottery_no][ticket_no];
         // Verify that the caller owns the ticket
         require(ticket.owner == msg.sender, "You do not own this ticket");
 
@@ -220,9 +223,9 @@ contract CompanyLotteries {
     */
     function checkIfAddrTicketWon(address addr, uint lottery_no, uint ticket_no) public view returns (bool won){
         require(lottery_no <= currentLotteryNo, "Invalid lottery number");
-        require(ticket_no < lotteries[lottery_no].tickets.length,"Invalid ticket number");
+        require(ticket_no < lotteryTickets[lottery_no].length,"Invalid ticket number");
 
-        LotteryStructs.Ticket storage ticket = lotteries[lottery_no].tickets[ticket_no];
+        LotteryStructs.Ticket storage ticket = lotteryTickets[lottery_no][ticket_no];
 
         // Verify that the ticket belongs to the specified address
         require(ticket.owner == addr, "The specified address does not own this ticket");
@@ -265,7 +268,6 @@ contract CompanyLotteries {
     */
     function withdrawTicketRefund(uint lottery_no, uint sticket_no) public {
         require(lottery_no <= currentLotteryNo, "Invalid lottery number");
-        require(lotteries[lottery_no].exists, "Lottery does not exist");
 
         LotteryStructs.Lottery storage lottery = lotteries[lottery_no];
 
@@ -278,9 +280,9 @@ contract CompanyLotteries {
             "Refunds not available for this lottery"
         );
 
-        require(sticket_no < lottery.tickets.length, "Invalid ticket number");
+        require(sticket_no < lotteryTickets[lottery_no].length, "Invalid ticket number");
 
-        LotteryStructs.Ticket storage ticket = lottery.tickets[sticket_no];
+        LotteryStructs.Ticket storage ticket = lotteryTickets[lottery_no][sticket_no];
 
         // Ensure the caller owns the ticket
         require(ticket.owner == msg.sender, "Caller is not the owner of this ticket");
@@ -311,7 +313,7 @@ contract CompanyLotteries {
     function withdrawTicketProceeds(uint lottery_no) public onlyOwner {
         // Ensure the lottery exists and is completed
         require(lottery_no <= currentLotteryNo, "Invalid lottery number");
-        require(lotteries[lottery_no].exists, "Lottery does not exist");
+
         require(
             lotteries[lottery_no].state == LotteryStructs.LotteryState.COMPLETED,
             "Lottery has not been completed"
@@ -349,7 +351,7 @@ contract CompanyLotteries {
     function getPaymentToken(uint lottery_no) public view returns (address erctokenaddr) {
         // Ensure the lottery exists
         require(lottery_no <= currentLotteryNo, "Invalid lottery number");
-        require(lotteries[lottery_no].exists, "Lottery does not exist");
+     
     
         // Return the ERC20 token address used for ticket purchases in the specified lottery
         erctokenaddr = address(ticketToken);
@@ -375,7 +377,7 @@ contract CompanyLotteries {
     {
             // Ensure the lottery exists
         require(lottery_no <= currentLotteryNo, "Invalid lottery number");
-        require(lotteries[lottery_no].exists, "Lottery does not exist");
+
         // Access the LotteryInfo struct for the specified lottery number
         LotteryStructs.Lottery storage lottery = lotteries[lottery_no];
         return (
@@ -400,7 +402,7 @@ contract CompanyLotteries {
     function getLotteryURL(uint lottery_no) public view returns (bytes32 htmlhash, string memory url) {
         // Ensure the lottery exists
         require(lottery_no <= currentLotteryNo, "Invalid lottery number");
-        require(lotteries[lottery_no].exists, "Lottery does not exist");
+
         LotteryStructs.Lottery storage lottery = lotteries[lottery_no];
         return (lottery.htmlhash, lottery.url);
     }
@@ -413,7 +415,7 @@ contract CompanyLotteries {
     function getLotterySales(uint lottery_no) public view returns (uint numsold)
     {   // Ensure the lottery exists
         require(lottery_no <= currentLotteryNo, "Invalid lottery number");
-        require(lotteries[lottery_no].exists, "Lottery does not exist");
+
         return lotteries[lottery_no].numsold;
     }
 
@@ -551,5 +553,5 @@ contract CompanyLotteries {
         }  
     }
 
-    
+
 }

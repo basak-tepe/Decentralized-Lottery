@@ -1,13 +1,13 @@
 {
-	"id": "dcb19c1be718f9088638263ef38e65a6",
+	"id": "43e7e2bc0dcac8c47de3c1b854464519",
 	"_format": "hh-sol-build-info-1",
 	"solcVersion": "0.8.26",
 	"solcLongVersion": "0.8.26+commit.8a97fa7a",
 	"input": {
 		"language": "Solidity",
 		"sources": {
-			"contracts/UpdatedContact/LotteryStructs.sol": {
-				"content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.0;\r\n/*\r\n    This library provides a set of data structures to manage and organize information required for a\r\n    lottery system. Library has a LotteryInfo struct to manage lottery information and TicketInfo\r\n    struct for tickets. It can also has an enum to define and manage lottery's state.\r\n*/\r\nlibrary LotteryStructs {\r\n\r\n    /*\r\n      Enum representing the various states a lottery can go through.\r\n     */\r\n    enum LotteryState {\r\n        PURCHASE,       // 1: Lottery is ongoing and tickets can be purchased\r\n        REVEAL,         // 2: Lottery has ended and it is number submission time\r\n        COMPLETED,      // 3: Lottery is completed and the winner is revealed\r\n        CANCELLED       // 4: Lottery is cancelled\r\n    }\r\n\r\n    /*\r\n        Struct representing a single lottery's information.\r\n    */\r\n    struct Lottery{\r\n        uint unixbeg;           // End time of the lottery (in Unix timestamp)\r\n        uint nooftickets;       // Number of tickets issued\r\n        uint noofwinners;       // Number of winners\r\n        uint minpercentage;     // Minimum percentage of the tickets \r\n                                // that need to be purchased in order to let the lottery run \r\n        uint ticketprice;       // Price of each ticket (in the NBG Token)      \r\n        bytes32 htmlhash;       // Hash of the contents of the html page that describes the lottery.\r\n        string url;             // URL of the html page that describes the lottery\r\n        uint  revealStartTime;  // Start time for random number reveal\r\n        bool exists;            // TO avoid unintentionally modifying a nonexistent lottery entry.\r\n        LotteryState state;     // Current state of the lottery\r\n        uint numsold;           // Number of tickets sold\r\n        uint numpurchasetxs;    // Number of purchase transactions.\r\n        uint currentRandom;     // To determine winners.\r\n        uint[] lotteryWinners;\r\n        Ticket[] tickets;       \r\n\r\n    }\r\n\r\n    /*\r\n        Struct representing details about a purchased ticket or tickets.\r\n    */\r\n    struct Ticket {\r\n        address owner;        // Address of the user who purchased the ticket(s)\r\n        uint quantity;        // Number of tickets purchased in this transaction - Max 30 can be sold\r\n        bytes32 hash;         // Commitment hash of a random number (used for fair lottery mechanics)\r\n        bool revealed;        // Indicates if the participant has revealed their random number\r\n        bool redeemed;        // Indicates if the participant has got \r\n    }\r\n\r\n\r\n}\r\n"
+			"contracts/LotteryStructs.sol": {
+				"content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\n/*\n    This library provides a set of data structures to manage and organize information required for a\n    lottery system. Library has a LotteryInfo struct to manage lottery information and TicketInfo\n    struct for tickets. It can also has an enum to define and manage lottery's state.\n*/\nlibrary LotteryStructs {\n\n    /*\n      Enum representing the various states a lottery can go through.\n     */\n    enum LotteryState {\n        PURCHASE,         // 1: Lottery is ongoing and tickets can be purchased\n        REVEAL,         // 2: Lottery has ended and it is number submission time\n        COMPLETED,      // 3: Lottery is completed and the winner is revealed\n        CANCELLED        // 4: Lottery is cancelled\n    }\n\n    /*\n        Struct representing a single lottery's information.\n     */\n    struct LotteryInfo {\n        uint unixbeg;           // End time of the lottery (in Unix timestamp)\n        uint nooftickets;       // Total number of tickets in the lottery\n        uint noofwinners;       // Number of winners to be selected\n        uint minpercentage;     // Minimum percentage of tickets to be sold for the lottery to be valid\n        uint ticketprice;       // Price of each ticket (in the NBG Token)\n        uint numsold;           // Number of tickets sold\n        LotteryState state;     // Current state of the lottery\n        uint numpurchasetxs;    // Number of purchase transactions.\n        uint sticketno;         // Which ticket are we distributing RN.\n        bytes32 htmlhash;       // Hash of the lottery details page (will be used for off-chain data verification)\n        string url;             // URL of the lottery details page (when needed)\n        address erctokenaddr;   // Address of the NBG Token contract used for payments\n        uint revealStartTime;   // Start time for random number reveal\n        uint[] lotteryWinners;\n        uint[] randomNumbers;\n    }\n\n    /*\n        Struct representing details about a purchased ticket or tickets.\n     */\n    struct TicketInfo {\n        address participant;        // Address of the user who purchased the ticket(s)\n        uint quantity;             // Number of tickets purchased in this transaction - Max 30 can be sold\n        bytes32 hash_rnd_number;    // Commitment hash of a random number (used for fair lottery mechanics)\n        bool revealed;              // Indicates if the participant has revealed their random number\n    }\n}\n"
 			}
 		},
 		"settings": {
@@ -40,7 +40,7 @@
 	},
 	"output": {
 		"contracts": {
-			"contracts/UpdatedContact/LotteryStructs.sol": {
+			"contracts/LotteryStructs.sol": {
 				"LotteryStructs": {
 					"abi": [],
 					"devdoc": {
@@ -49,23 +49,23 @@
 						"version": 1
 					},
 					"evm": {
-						"assembly": "    /* \"contracts/UpdatedContact/LotteryStructs.sol\":354:2601  library LotteryStructs {... */\n  dataSize(sub_0)\n  dataOffset(sub_0)\n  0x0b\n  dup3\n  dup3\n  dup3\n  codecopy\n  dup1\n  mload\n  0x00\n  byte\n  0x73\n  eq\n  tag_1\n  jumpi\n  mstore(0x00, 0x4e487b7100000000000000000000000000000000000000000000000000000000)\n  mstore(0x04, 0x00)\n  revert(0x00, 0x24)\ntag_1:\n  mstore(0x00, address)\n  0x73\n  dup2\n  mstore8\n  dup3\n  dup2\n  return\nstop\n\nsub_0: assembly {\n        /* \"contracts/UpdatedContact/LotteryStructs.sol\":354:2601  library LotteryStructs {... */\n      eq(address, deployTimeAddress())\n      mstore(0x40, 0x80)\n      0x00\n      dup1\n      revert\n\n    auxdata: 0xa2646970667358221220d084f7427230982d1bc529224ded1ee063a003b27d2b1a851c6f0f3507d7cae464736f6c634300081a0033\n}\n",
+						"assembly": "    /* \"contracts/LotteryStructs.sol\":348:2486  library LotteryStructs {... */\n  dataSize(sub_0)\n  dataOffset(sub_0)\n  0x0b\n  dup3\n  dup3\n  dup3\n  codecopy\n  dup1\n  mload\n  0x00\n  byte\n  0x73\n  eq\n  tag_1\n  jumpi\n  mstore(0x00, 0x4e487b7100000000000000000000000000000000000000000000000000000000)\n  mstore(0x04, 0x00)\n  revert(0x00, 0x24)\ntag_1:\n  mstore(0x00, address)\n  0x73\n  dup2\n  mstore8\n  dup3\n  dup2\n  return\nstop\n\nsub_0: assembly {\n        /* \"contracts/LotteryStructs.sol\":348:2486  library LotteryStructs {... */\n      eq(address, deployTimeAddress())\n      mstore(0x40, 0x80)\n      0x00\n      dup1\n      revert\n\n    auxdata: 0xa2646970667358221220fb455f08682dc84fd9fcff3eac0c7ba0cf493da0ae873427d511def81c436c0264736f6c634300081a0033\n}\n",
 						"bytecode": {
 							"functionDebugData": {},
 							"generatedSources": [],
 							"linkReferences": {},
-							"object": "6055604b600b8282823980515f1a607314603f577f4e487b71000000000000000000000000000000000000000000000000000000005f525f60045260245ffd5b305f52607381538281f3fe730000000000000000000000000000000000000000301460806040525f80fdfea2646970667358221220d084f7427230982d1bc529224ded1ee063a003b27d2b1a851c6f0f3507d7cae464736f6c634300081a0033",
-							"opcodes": "PUSH1 0x55 PUSH1 0x4B PUSH1 0xB DUP3 DUP3 DUP3 CODECOPY DUP1 MLOAD PUSH0 BYTE PUSH1 0x73 EQ PUSH1 0x3F JUMPI PUSH32 0x4E487B7100000000000000000000000000000000000000000000000000000000 PUSH0 MSTORE PUSH0 PUSH1 0x4 MSTORE PUSH1 0x24 PUSH0 REVERT JUMPDEST ADDRESS PUSH0 MSTORE PUSH1 0x73 DUP2 MSTORE8 DUP3 DUP2 RETURN INVALID PUSH20 0x0 ADDRESS EQ PUSH1 0x80 PUSH1 0x40 MSTORE PUSH0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 0xD0 DUP5 0xF7 TIMESTAMP PUSH19 0x30982D1BC529224DED1EE063A003B27D2B1A85 SHR PUSH16 0xF3507D7CAE464736F6C634300081A00 CALLER ",
-							"sourceMap": "354:2247:0:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;"
+							"object": "6055604b600b8282823980515f1a607314603f577f4e487b71000000000000000000000000000000000000000000000000000000005f525f60045260245ffd5b305f52607381538281f3fe730000000000000000000000000000000000000000301460806040525f80fdfea2646970667358221220fb455f08682dc84fd9fcff3eac0c7ba0cf493da0ae873427d511def81c436c0264736f6c634300081a0033",
+							"opcodes": "PUSH1 0x55 PUSH1 0x4B PUSH1 0xB DUP3 DUP3 DUP3 CODECOPY DUP1 MLOAD PUSH0 BYTE PUSH1 0x73 EQ PUSH1 0x3F JUMPI PUSH32 0x4E487B7100000000000000000000000000000000000000000000000000000000 PUSH0 MSTORE PUSH0 PUSH1 0x4 MSTORE PUSH1 0x24 PUSH0 REVERT JUMPDEST ADDRESS PUSH0 MSTORE PUSH1 0x73 DUP2 MSTORE8 DUP3 DUP2 RETURN INVALID PUSH20 0x0 ADDRESS EQ PUSH1 0x80 PUSH1 0x40 MSTORE PUSH0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 0xFB GASLIMIT PUSH0 ADDMOD PUSH9 0x2DC84FD9FCFF3EAC0C PUSH28 0xA0CF493DA0AE873427D511DEF81C436C0264736F6C634300081A0033 ",
+							"sourceMap": "348:2138:0:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;"
 						},
 						"deployedBytecode": {
 							"functionDebugData": {},
 							"generatedSources": [],
 							"immutableReferences": {},
 							"linkReferences": {},
-							"object": "730000000000000000000000000000000000000000301460806040525f80fdfea2646970667358221220d084f7427230982d1bc529224ded1ee063a003b27d2b1a851c6f0f3507d7cae464736f6c634300081a0033",
-							"opcodes": "PUSH20 0x0 ADDRESS EQ PUSH1 0x80 PUSH1 0x40 MSTORE PUSH0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 0xD0 DUP5 0xF7 TIMESTAMP PUSH19 0x30982D1BC529224DED1EE063A003B27D2B1A85 SHR PUSH16 0xF3507D7CAE464736F6C634300081A00 CALLER ",
-							"sourceMap": "354:2247:0:-:0;;;;;;;;"
+							"object": "730000000000000000000000000000000000000000301460806040525f80fdfea2646970667358221220fb455f08682dc84fd9fcff3eac0c7ba0cf493da0ae873427d511def81c436c0264736f6c634300081a0033",
+							"opcodes": "PUSH20 0x0 ADDRESS EQ PUSH1 0x80 PUSH1 0x40 MSTORE PUSH0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 0xFB GASLIMIT PUSH0 ADDMOD PUSH9 0x2DC84FD9FCFF3EAC0C PUSH28 0xA0CF493DA0AE873427D511DEF81C436C0264736F6C634300081A0033 ",
+							"sourceMap": "348:2138:0:-:0;;;;;;;;"
 						},
 						"gasEstimates": {
 							"creation": {
@@ -77,289 +77,289 @@
 						"legacyAssembly": {
 							".code": [
 								{
-									"begin": 354,
-									"end": 2601,
+									"begin": 348,
+									"end": 2486,
 									"name": "PUSH #[$]",
 									"source": 0,
 									"value": "0000000000000000000000000000000000000000000000000000000000000000"
 								},
 								{
-									"begin": 354,
-									"end": 2601,
+									"begin": 348,
+									"end": 2486,
 									"name": "PUSH [$]",
 									"source": 0,
 									"value": "0000000000000000000000000000000000000000000000000000000000000000"
 								},
 								{
-									"begin": 354,
-									"end": 2601,
+									"begin": 348,
+									"end": 2486,
 									"name": "PUSH",
 									"source": 0,
 									"value": "B"
 								},
 								{
-									"begin": 354,
-									"end": 2601,
+									"begin": 348,
+									"end": 2486,
 									"name": "DUP3",
 									"source": 0
 								},
 								{
-									"begin": 354,
-									"end": 2601,
+									"begin": 348,
+									"end": 2486,
 									"name": "DUP3",
 									"source": 0
 								},
 								{
-									"begin": 354,
-									"end": 2601,
+									"begin": 348,
+									"end": 2486,
 									"name": "DUP3",
 									"source": 0
 								},
 								{
-									"begin": 354,
-									"end": 2601,
+									"begin": 348,
+									"end": 2486,
 									"name": "CODECOPY",
 									"source": 0
 								},
 								{
-									"begin": 354,
-									"end": 2601,
+									"begin": 348,
+									"end": 2486,
 									"name": "DUP1",
 									"source": 0
 								},
 								{
-									"begin": 354,
-									"end": 2601,
+									"begin": 348,
+									"end": 2486,
 									"name": "MLOAD",
 									"source": 0
 								},
 								{
-									"begin": 354,
-									"end": 2601,
+									"begin": 348,
+									"end": 2486,
 									"name": "PUSH",
 									"source": 0,
 									"value": "0"
 								},
 								{
-									"begin": 354,
-									"end": 2601,
+									"begin": 348,
+									"end": 2486,
 									"name": "BYTE",
 									"source": 0
 								},
 								{
-									"begin": 354,
-									"end": 2601,
+									"begin": 348,
+									"end": 2486,
 									"name": "PUSH",
 									"source": 0,
 									"value": "73"
 								},
 								{
-									"begin": 354,
-									"end": 2601,
+									"begin": 348,
+									"end": 2486,
 									"name": "EQ",
 									"source": 0
 								},
 								{
-									"begin": 354,
-									"end": 2601,
+									"begin": 348,
+									"end": 2486,
 									"name": "PUSH [tag]",
 									"source": 0,
 									"value": "1"
 								},
 								{
-									"begin": 354,
-									"end": 2601,
+									"begin": 348,
+									"end": 2486,
 									"name": "JUMPI",
 									"source": 0
 								},
 								{
-									"begin": 354,
-									"end": 2601,
+									"begin": 348,
+									"end": 2486,
 									"name": "PUSH",
 									"source": 0,
 									"value": "4E487B7100000000000000000000000000000000000000000000000000000000"
 								},
 								{
-									"begin": 354,
-									"end": 2601,
+									"begin": 348,
+									"end": 2486,
 									"name": "PUSH",
 									"source": 0,
 									"value": "0"
 								},
 								{
-									"begin": 354,
-									"end": 2601,
+									"begin": 348,
+									"end": 2486,
 									"name": "MSTORE",
 									"source": 0
 								},
 								{
-									"begin": 354,
-									"end": 2601,
+									"begin": 348,
+									"end": 2486,
 									"name": "PUSH",
 									"source": 0,
 									"value": "0"
 								},
 								{
-									"begin": 354,
-									"end": 2601,
+									"begin": 348,
+									"end": 2486,
 									"name": "PUSH",
 									"source": 0,
 									"value": "4"
 								},
 								{
-									"begin": 354,
-									"end": 2601,
+									"begin": 348,
+									"end": 2486,
 									"name": "MSTORE",
 									"source": 0
 								},
 								{
-									"begin": 354,
-									"end": 2601,
+									"begin": 348,
+									"end": 2486,
 									"name": "PUSH",
 									"source": 0,
 									"value": "24"
 								},
 								{
-									"begin": 354,
-									"end": 2601,
+									"begin": 348,
+									"end": 2486,
 									"name": "PUSH",
 									"source": 0,
 									"value": "0"
 								},
 								{
-									"begin": 354,
-									"end": 2601,
+									"begin": 348,
+									"end": 2486,
 									"name": "REVERT",
 									"source": 0
 								},
 								{
-									"begin": 354,
-									"end": 2601,
+									"begin": 348,
+									"end": 2486,
 									"name": "tag",
 									"source": 0,
 									"value": "1"
 								},
 								{
-									"begin": 354,
-									"end": 2601,
+									"begin": 348,
+									"end": 2486,
 									"name": "JUMPDEST",
 									"source": 0
 								},
 								{
-									"begin": 354,
-									"end": 2601,
+									"begin": 348,
+									"end": 2486,
 									"name": "ADDRESS",
 									"source": 0
 								},
 								{
-									"begin": 354,
-									"end": 2601,
+									"begin": 348,
+									"end": 2486,
 									"name": "PUSH",
 									"source": 0,
 									"value": "0"
 								},
 								{
-									"begin": 354,
-									"end": 2601,
+									"begin": 348,
+									"end": 2486,
 									"name": "MSTORE",
 									"source": 0
 								},
 								{
-									"begin": 354,
-									"end": 2601,
+									"begin": 348,
+									"end": 2486,
 									"name": "PUSH",
 									"source": 0,
 									"value": "73"
 								},
 								{
-									"begin": 354,
-									"end": 2601,
+									"begin": 348,
+									"end": 2486,
 									"name": "DUP2",
 									"source": 0
 								},
 								{
-									"begin": 354,
-									"end": 2601,
+									"begin": 348,
+									"end": 2486,
 									"name": "MSTORE8",
 									"source": 0
 								},
 								{
-									"begin": 354,
-									"end": 2601,
+									"begin": 348,
+									"end": 2486,
 									"name": "DUP3",
 									"source": 0
 								},
 								{
-									"begin": 354,
-									"end": 2601,
+									"begin": 348,
+									"end": 2486,
 									"name": "DUP2",
 									"source": 0
 								},
 								{
-									"begin": 354,
-									"end": 2601,
+									"begin": 348,
+									"end": 2486,
 									"name": "RETURN",
 									"source": 0
 								}
 							],
 							".data": {
 								"0": {
-									".auxdata": "a2646970667358221220d084f7427230982d1bc529224ded1ee063a003b27d2b1a851c6f0f3507d7cae464736f6c634300081a0033",
+									".auxdata": "a2646970667358221220fb455f08682dc84fd9fcff3eac0c7ba0cf493da0ae873427d511def81c436c0264736f6c634300081a0033",
 									".code": [
 										{
-											"begin": 354,
-											"end": 2601,
+											"begin": 348,
+											"end": 2486,
 											"name": "PUSHDEPLOYADDRESS",
 											"source": 0
 										},
 										{
-											"begin": 354,
-											"end": 2601,
+											"begin": 348,
+											"end": 2486,
 											"name": "ADDRESS",
 											"source": 0
 										},
 										{
-											"begin": 354,
-											"end": 2601,
+											"begin": 348,
+											"end": 2486,
 											"name": "EQ",
 											"source": 0
 										},
 										{
-											"begin": 354,
-											"end": 2601,
+											"begin": 348,
+											"end": 2486,
 											"name": "PUSH",
 											"source": 0,
 											"value": "80"
 										},
 										{
-											"begin": 354,
-											"end": 2601,
+											"begin": 348,
+											"end": 2486,
 											"name": "PUSH",
 											"source": 0,
 											"value": "40"
 										},
 										{
-											"begin": 354,
-											"end": 2601,
+											"begin": 348,
+											"end": 2486,
 											"name": "MSTORE",
 											"source": 0
 										},
 										{
-											"begin": 354,
-											"end": 2601,
+											"begin": 348,
+											"end": 2486,
 											"name": "PUSH",
 											"source": 0,
 											"value": "0"
 										},
 										{
-											"begin": 354,
-											"end": 2601,
+											"begin": 348,
+											"end": 2486,
 											"name": "DUP1",
 											"source": 0
 										},
 										{
-											"begin": 354,
-											"end": 2601,
+											"begin": 348,
+											"end": 2486,
 											"name": "REVERT",
 											"source": 0
 										}
@@ -367,13 +367,13 @@
 								}
 							},
 							"sourceList": [
-								"contracts/UpdatedContact/LotteryStructs.sol",
+								"contracts/LotteryStructs.sol",
 								"#utility.yul"
 							]
 						},
 						"methodIdentifiers": {}
 					},
-					"metadata": "{\"compiler\":{\"version\":\"0.8.26+commit.8a97fa7a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/UpdatedContact/LotteryStructs.sol\":\"LotteryStructs\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"contracts/UpdatedContact/LotteryStructs.sol\":{\"keccak256\":\"0x52d973ac4a00b65a724e0f677da59f47b918754807ec5993752087fa12e02281\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://a2a5f080984a1cb6cfadd6a6de0a23d481bba2a2b4bb7c5e0d94d0924dc152d9\",\"dweb:/ipfs/QmUUb8jpZLLmtfdoDryM1ppffAgYzFdjGN4sm41uuYke1D\"]}},\"version\":1}",
+					"metadata": "{\"compiler\":{\"version\":\"0.8.26+commit.8a97fa7a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/LotteryStructs.sol\":\"LotteryStructs\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"contracts/LotteryStructs.sol\":{\"keccak256\":\"0xec5234faefb8b996cad1c5b26b45b16f3d4d4012201842819efd4b5a5f881bed\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://bf898470f9968165883cb1b1ab394d3ec8518e1c78856858b2c8bfcb52ebc5ee\",\"dweb:/ipfs/QmPZCHh84KAqiLAgA6U1kEV1U3T8C7iAKJHNwpzEupoE3K\"]}},\"version\":1}",
 					"storageLayout": {
 						"storage": [],
 						"types": null
@@ -387,15 +387,15 @@
 			}
 		},
 		"sources": {
-			"contracts/UpdatedContact/LotteryStructs.sol": {
+			"contracts/LotteryStructs.sol": {
 				"ast": {
-					"absolutePath": "contracts/UpdatedContact/LotteryStructs.sol",
+					"absolutePath": "contracts/LotteryStructs.sol",
 					"exportedSymbols": {
 						"LotteryStructs": [
-							53
+							50
 						]
 					},
-					"id": 54,
+					"id": 51,
 					"license": "MIT",
 					"nodeType": "SourceUnit",
 					"nodes": [
@@ -408,7 +408,7 @@
 								".0"
 							],
 							"nodeType": "PragmaDirective",
-							"src": "33:23:0"
+							"src": "32:23:0"
 						},
 						{
 							"abstract": false,
@@ -417,12 +417,12 @@
 							"contractDependencies": [],
 							"contractKind": "library",
 							"fullyImplemented": true,
-							"id": 53,
+							"id": 50,
 							"linearizedBaseContracts": [
-								53
+								50
 							],
 							"name": "LotteryStructs",
-							"nameLocation": "362:14:0",
+							"nameLocation": "356:14:0",
 							"nodeType": "ContractDefinition",
 							"nodes": [
 								{
@@ -432,50 +432,50 @@
 										{
 											"id": 2,
 											"name": "PURCHASE",
-											"nameLocation": "502:8:0",
+											"nameLocation": "490:8:0",
 											"nodeType": "EnumValue",
-											"src": "502:8:0"
+											"src": "490:8:0"
 										},
 										{
 											"id": 3,
 											"name": "REVEAL",
-											"nameLocation": "581:6:0",
+											"nameLocation": "570:6:0",
 											"nodeType": "EnumValue",
-											"src": "581:6:0"
+											"src": "570:6:0"
 										},
 										{
 											"id": 4,
 											"name": "COMPLETED",
-											"nameLocation": "663:9:0",
+											"nameLocation": "651:9:0",
 											"nodeType": "EnumValue",
-											"src": "663:9:0"
+											"src": "651:9:0"
 										},
 										{
 											"id": 5,
 											"name": "CANCELLED",
-											"nameLocation": "742:9:0",
+											"nameLocation": "729:9:0",
 											"nodeType": "EnumValue",
-											"src": "742:9:0"
+											"src": "729:9:0"
 										}
 									],
 									"name": "LotteryState",
-									"nameLocation": "478:12:0",
+									"nameLocation": "467:12:0",
 									"nodeType": "EnumDefinition",
-									"src": "473:318:0"
+									"src": "462:316:0"
 								},
 								{
-									"canonicalName": "LotteryStructs.Lottery",
-									"id": 41,
+									"canonicalName": "LotteryStructs.LotteryInfo",
+									"id": 40,
 									"members": [
 										{
 											"constant": false,
 											"id": 8,
 											"mutability": "mutable",
 											"name": "unixbeg",
-											"nameLocation": "906:7:0",
+											"nameLocation": "893:7:0",
 											"nodeType": "VariableDeclaration",
-											"scope": 41,
-											"src": "901:12:0",
+											"scope": 40,
+											"src": "888:12:0",
 											"stateVariable": false,
 											"storageLocation": "default",
 											"typeDescriptions": {
@@ -486,7 +486,7 @@
 												"id": 7,
 												"name": "uint",
 												"nodeType": "ElementaryTypeName",
-												"src": "901:4:0",
+												"src": "888:4:0",
 												"typeDescriptions": {
 													"typeIdentifier": "t_uint256",
 													"typeString": "uint256"
@@ -499,10 +499,10 @@
 											"id": 10,
 											"mutability": "mutable",
 											"name": "nooftickets",
-											"nameLocation": "986:11:0",
+											"nameLocation": "972:11:0",
 											"nodeType": "VariableDeclaration",
-											"scope": 41,
-											"src": "981:16:0",
+											"scope": 40,
+											"src": "967:16:0",
 											"stateVariable": false,
 											"storageLocation": "default",
 											"typeDescriptions": {
@@ -513,7 +513,7 @@
 												"id": 9,
 												"name": "uint",
 												"nodeType": "ElementaryTypeName",
-												"src": "981:4:0",
+												"src": "967:4:0",
 												"typeDescriptions": {
 													"typeIdentifier": "t_uint256",
 													"typeString": "uint256"
@@ -526,10 +526,10 @@
 											"id": 12,
 											"mutability": "mutable",
 											"name": "noofwinners",
-											"nameLocation": "1047:11:0",
+											"nameLocation": "1046:11:0",
 											"nodeType": "VariableDeclaration",
-											"scope": 41,
-											"src": "1042:16:0",
+											"scope": 40,
+											"src": "1041:16:0",
 											"stateVariable": false,
 											"storageLocation": "default",
 											"typeDescriptions": {
@@ -540,7 +540,7 @@
 												"id": 11,
 												"name": "uint",
 												"nodeType": "ElementaryTypeName",
-												"src": "1042:4:0",
+												"src": "1041:4:0",
 												"typeDescriptions": {
 													"typeIdentifier": "t_uint256",
 													"typeString": "uint256"
@@ -553,10 +553,10 @@
 											"id": 14,
 											"mutability": "mutable",
 											"name": "minpercentage",
-											"nameLocation": "1101:13:0",
+											"nameLocation": "1114:13:0",
 											"nodeType": "VariableDeclaration",
-											"scope": 41,
-											"src": "1096:18:0",
+											"scope": 40,
+											"src": "1109:18:0",
 											"stateVariable": false,
 											"storageLocation": "default",
 											"typeDescriptions": {
@@ -567,7 +567,7 @@
 												"id": 13,
 												"name": "uint",
 												"nodeType": "ElementaryTypeName",
-												"src": "1096:4:0",
+												"src": "1109:4:0",
 												"typeDescriptions": {
 													"typeIdentifier": "t_uint256",
 													"typeString": "uint256"
@@ -580,10 +580,10 @@
 											"id": 16,
 											"mutability": "mutable",
 											"name": "ticketprice",
-											"nameLocation": "1267:11:0",
+											"nameLocation": "1218:11:0",
 											"nodeType": "VariableDeclaration",
-											"scope": 41,
-											"src": "1262:16:0",
+											"scope": 40,
+											"src": "1213:16:0",
 											"stateVariable": false,
 											"storageLocation": "default",
 											"typeDescriptions": {
@@ -594,7 +594,7 @@
 												"id": 15,
 												"name": "uint",
 												"nodeType": "ElementaryTypeName",
-												"src": "1262:4:0",
+												"src": "1213:4:0",
 												"typeDescriptions": {
 													"typeIdentifier": "t_uint256",
 													"typeString": "uint256"
@@ -606,65 +606,11 @@
 											"constant": false,
 											"id": 18,
 											"mutability": "mutable",
-											"name": "htmlhash",
-											"nameLocation": "1352:8:0",
+											"name": "numsold",
+											"nameLocation": "1293:7:0",
 											"nodeType": "VariableDeclaration",
-											"scope": 41,
-											"src": "1344:16:0",
-											"stateVariable": false,
-											"storageLocation": "default",
-											"typeDescriptions": {
-												"typeIdentifier": "t_bytes32",
-												"typeString": "bytes32"
-											},
-											"typeName": {
-												"id": 17,
-												"name": "bytes32",
-												"nodeType": "ElementaryTypeName",
-												"src": "1344:7:0",
-												"typeDescriptions": {
-													"typeIdentifier": "t_bytes32",
-													"typeString": "bytes32"
-												}
-											},
-											"visibility": "internal"
-										},
-										{
-											"constant": false,
-											"id": 20,
-											"mutability": "mutable",
-											"name": "url",
-											"nameLocation": "1453:3:0",
-											"nodeType": "VariableDeclaration",
-											"scope": 41,
-											"src": "1446:10:0",
-											"stateVariable": false,
-											"storageLocation": "default",
-											"typeDescriptions": {
-												"typeIdentifier": "t_string_storage_ptr",
-												"typeString": "string"
-											},
-											"typeName": {
-												"id": 19,
-												"name": "string",
-												"nodeType": "ElementaryTypeName",
-												"src": "1446:6:0",
-												"typeDescriptions": {
-													"typeIdentifier": "t_string_storage_ptr",
-													"typeString": "string"
-												}
-											},
-											"visibility": "internal"
-										},
-										{
-											"constant": false,
-											"id": 22,
-											"mutability": "mutable",
-											"name": "revealStartTime",
-											"nameLocation": "1536:15:0",
-											"nodeType": "VariableDeclaration",
-											"scope": 41,
-											"src": "1530:21:0",
+											"scope": 40,
+											"src": "1288:12:0",
 											"stateVariable": false,
 											"storageLocation": "default",
 											"typeDescriptions": {
@@ -672,10 +618,10 @@
 												"typeString": "uint256"
 											},
 											"typeName": {
-												"id": 21,
+												"id": 17,
 												"name": "uint",
 												"nodeType": "ElementaryTypeName",
-												"src": "1530:4:0",
+												"src": "1288:4:0",
 												"typeDescriptions": {
 													"typeIdentifier": "t_uint256",
 													"typeString": "uint256"
@@ -685,40 +631,13 @@
 										},
 										{
 											"constant": false,
-											"id": 24,
-											"mutability": "mutable",
-											"name": "exists",
-											"nameLocation": "1607:6:0",
-											"nodeType": "VariableDeclaration",
-											"scope": 41,
-											"src": "1602:11:0",
-											"stateVariable": false,
-											"storageLocation": "default",
-											"typeDescriptions": {
-												"typeIdentifier": "t_bool",
-												"typeString": "bool"
-											},
-											"typeName": {
-												"id": 23,
-												"name": "bool",
-												"nodeType": "ElementaryTypeName",
-												"src": "1602:4:0",
-												"typeDescriptions": {
-													"typeIdentifier": "t_bool",
-													"typeString": "bool"
-												}
-											},
-											"visibility": "internal"
-										},
-										{
-											"constant": false,
-											"id": 27,
+											"id": 21,
 											"mutability": "mutable",
 											"name": "state",
-											"nameLocation": "1715:5:0",
+											"nameLocation": "1359:5:0",
 											"nodeType": "VariableDeclaration",
-											"scope": 41,
-											"src": "1702:18:0",
+											"scope": 40,
+											"src": "1346:18:0",
 											"stateVariable": false,
 											"storageLocation": "default",
 											"typeDescriptions": {
@@ -726,20 +645,20 @@
 												"typeString": "enum LotteryStructs.LotteryState"
 											},
 											"typeName": {
-												"id": 26,
+												"id": 20,
 												"nodeType": "UserDefinedTypeName",
 												"pathNode": {
-													"id": 25,
+													"id": 19,
 													"name": "LotteryState",
 													"nameLocations": [
-														"1702:12:0"
+														"1346:12:0"
 													],
 													"nodeType": "IdentifierPath",
 													"referencedDeclaration": 6,
-													"src": "1702:12:0"
+													"src": "1346:12:0"
 												},
 												"referencedDeclaration": 6,
-												"src": "1702:12:0",
+												"src": "1346:12:0",
 												"typeDescriptions": {
 													"typeIdentifier": "t_enum$_LotteryState_$6",
 													"typeString": "enum LotteryStructs.LotteryState"
@@ -749,13 +668,13 @@
 										},
 										{
 											"constant": false,
-											"id": 29,
+											"id": 23,
 											"mutability": "mutable",
-											"name": "numsold",
-											"nameLocation": "1772:7:0",
+											"name": "numpurchasetxs",
+											"nameLocation": "1415:14:0",
 											"nodeType": "VariableDeclaration",
-											"scope": 41,
-											"src": "1767:12:0",
+											"scope": 40,
+											"src": "1410:19:0",
 											"stateVariable": false,
 											"storageLocation": "default",
 											"typeDescriptions": {
@@ -763,13 +682,94 @@
 												"typeString": "uint256"
 											},
 											"typeName": {
-												"id": 28,
+												"id": 22,
 												"name": "uint",
 												"nodeType": "ElementaryTypeName",
-												"src": "1767:4:0",
+												"src": "1410:4:0",
 												"typeDescriptions": {
 													"typeIdentifier": "t_uint256",
 													"typeString": "uint256"
+												}
+											},
+											"visibility": "internal"
+										},
+										{
+											"constant": false,
+											"id": 25,
+											"mutability": "mutable",
+											"name": "sticketno",
+											"nameLocation": "1483:9:0",
+											"nodeType": "VariableDeclaration",
+											"scope": 40,
+											"src": "1478:14:0",
+											"stateVariable": false,
+											"storageLocation": "default",
+											"typeDescriptions": {
+												"typeIdentifier": "t_uint256",
+												"typeString": "uint256"
+											},
+											"typeName": {
+												"id": 24,
+												"name": "uint",
+												"nodeType": "ElementaryTypeName",
+												"src": "1478:4:0",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												}
+											},
+											"visibility": "internal"
+										},
+										{
+											"constant": false,
+											"id": 27,
+											"mutability": "mutable",
+											"name": "htmlhash",
+											"nameLocation": "1558:8:0",
+											"nodeType": "VariableDeclaration",
+											"scope": 40,
+											"src": "1550:16:0",
+											"stateVariable": false,
+											"storageLocation": "default",
+											"typeDescriptions": {
+												"typeIdentifier": "t_bytes32",
+												"typeString": "bytes32"
+											},
+											"typeName": {
+												"id": 26,
+												"name": "bytes32",
+												"nodeType": "ElementaryTypeName",
+												"src": "1550:7:0",
+												"typeDescriptions": {
+													"typeIdentifier": "t_bytes32",
+													"typeString": "bytes32"
+												}
+											},
+											"visibility": "internal"
+										},
+										{
+											"constant": false,
+											"id": 29,
+											"mutability": "mutable",
+											"name": "url",
+											"nameLocation": "1672:3:0",
+											"nodeType": "VariableDeclaration",
+											"scope": 40,
+											"src": "1665:10:0",
+											"stateVariable": false,
+											"storageLocation": "default",
+											"typeDescriptions": {
+												"typeIdentifier": "t_string_storage_ptr",
+												"typeString": "string"
+											},
+											"typeName": {
+												"id": 28,
+												"name": "string",
+												"nodeType": "ElementaryTypeName",
+												"src": "1665:6:0",
+												"typeDescriptions": {
+													"typeIdentifier": "t_string_storage_ptr",
+													"typeString": "string"
 												}
 											},
 											"visibility": "internal"
@@ -778,25 +778,26 @@
 											"constant": false,
 											"id": 31,
 											"mutability": "mutable",
-											"name": "numpurchasetxs",
-											"nameLocation": "1831:14:0",
+											"name": "erctokenaddr",
+											"nameLocation": "1754:12:0",
 											"nodeType": "VariableDeclaration",
-											"scope": 41,
-											"src": "1826:19:0",
+											"scope": 40,
+											"src": "1746:20:0",
 											"stateVariable": false,
 											"storageLocation": "default",
 											"typeDescriptions": {
-												"typeIdentifier": "t_uint256",
-												"typeString": "uint256"
+												"typeIdentifier": "t_address",
+												"typeString": "address"
 											},
 											"typeName": {
 												"id": 30,
-												"name": "uint",
+												"name": "address",
 												"nodeType": "ElementaryTypeName",
-												"src": "1826:4:0",
+												"src": "1746:7:0",
+												"stateMutability": "nonpayable",
 												"typeDescriptions": {
-													"typeIdentifier": "t_uint256",
-													"typeString": "uint256"
+													"typeIdentifier": "t_address",
+													"typeString": "address"
 												}
 											},
 											"visibility": "internal"
@@ -805,11 +806,11 @@
 											"constant": false,
 											"id": 33,
 											"mutability": "mutable",
-											"name": "currentRandom",
-											"nameLocation": "1900:13:0",
+											"name": "revealStartTime",
+											"nameLocation": "1838:15:0",
 											"nodeType": "VariableDeclaration",
-											"scope": 41,
-											"src": "1895:18:0",
+											"scope": 40,
+											"src": "1833:20:0",
 											"stateVariable": false,
 											"storageLocation": "default",
 											"typeDescriptions": {
@@ -820,7 +821,7 @@
 												"id": 32,
 												"name": "uint",
 												"nodeType": "ElementaryTypeName",
-												"src": "1895:4:0",
+												"src": "1833:4:0",
 												"typeDescriptions": {
 													"typeIdentifier": "t_uint256",
 													"typeString": "uint256"
@@ -833,10 +834,10 @@
 											"id": 36,
 											"mutability": "mutable",
 											"name": "lotteryWinners",
-											"nameLocation": "1960:14:0",
+											"nameLocation": "1911:14:0",
 											"nodeType": "VariableDeclaration",
-											"scope": 41,
-											"src": "1953:21:0",
+											"scope": 40,
+											"src": "1904:21:0",
 											"stateVariable": false,
 											"storageLocation": "default",
 											"typeDescriptions": {
@@ -848,7 +849,7 @@
 													"id": 34,
 													"name": "uint",
 													"nodeType": "ElementaryTypeName",
-													"src": "1953:4:0",
+													"src": "1904:4:0",
 													"typeDescriptions": {
 														"typeIdentifier": "t_uint256",
 														"typeString": "uint256"
@@ -856,7 +857,7 @@
 												},
 												"id": 35,
 												"nodeType": "ArrayTypeName",
-												"src": "1953:6:0",
+												"src": "1904:6:0",
 												"typeDescriptions": {
 													"typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
 													"typeString": "uint256[]"
@@ -866,71 +867,61 @@
 										},
 										{
 											"constant": false,
-											"id": 40,
+											"id": 39,
 											"mutability": "mutable",
-											"name": "tickets",
-											"nameLocation": "1994:7:0",
+											"name": "randomNumbers",
+											"nameLocation": "1942:13:0",
 											"nodeType": "VariableDeclaration",
-											"scope": 41,
-											"src": "1985:16:0",
+											"scope": 40,
+											"src": "1935:20:0",
 											"stateVariable": false,
 											"storageLocation": "default",
 											"typeDescriptions": {
-												"typeIdentifier": "t_array$_t_struct$_Ticket_$52_storage_$dyn_storage_ptr",
-												"typeString": "struct LotteryStructs.Ticket[]"
+												"typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+												"typeString": "uint256[]"
 											},
 											"typeName": {
 												"baseType": {
-													"id": 38,
-													"nodeType": "UserDefinedTypeName",
-													"pathNode": {
-														"id": 37,
-														"name": "Ticket",
-														"nameLocations": [
-															"1985:6:0"
-														],
-														"nodeType": "IdentifierPath",
-														"referencedDeclaration": 52,
-														"src": "1985:6:0"
-													},
-													"referencedDeclaration": 52,
-													"src": "1985:6:0",
+													"id": 37,
+													"name": "uint",
+													"nodeType": "ElementaryTypeName",
+													"src": "1935:4:0",
 													"typeDescriptions": {
-														"typeIdentifier": "t_struct$_Ticket_$52_storage_ptr",
-														"typeString": "struct LotteryStructs.Ticket"
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
 													}
 												},
-												"id": 39,
+												"id": 38,
 												"nodeType": "ArrayTypeName",
-												"src": "1985:8:0",
+												"src": "1935:6:0",
 												"typeDescriptions": {
-													"typeIdentifier": "t_array$_t_struct$_Ticket_$52_storage_$dyn_storage_ptr",
-													"typeString": "struct LotteryStructs.Ticket[]"
+													"typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+													"typeString": "uint256[]"
 												}
 											},
 											"visibility": "internal"
 										}
 									],
-									"name": "Lottery",
-									"nameLocation": "883:7:0",
+									"name": "LotteryInfo",
+									"nameLocation": "866:11:0",
 									"nodeType": "StructDefinition",
-									"scope": 53,
-									"src": "876:1142:0",
+									"scope": 50,
+									"src": "859:1103:0",
 									"visibility": "public"
 								},
 								{
-									"canonicalName": "LotteryStructs.Ticket",
-									"id": 52,
+									"canonicalName": "LotteryStructs.TicketInfo",
+									"id": 49,
 									"members": [
 										{
 											"constant": false,
-											"id": 43,
+											"id": 42,
 											"mutability": "mutable",
-											"name": "owner",
-											"nameLocation": "2149:5:0",
+											"name": "participant",
+											"nameLocation": "2092:11:0",
 											"nodeType": "VariableDeclaration",
-											"scope": 52,
-											"src": "2141:13:0",
+											"scope": 49,
+											"src": "2084:19:0",
 											"stateVariable": false,
 											"storageLocation": "default",
 											"typeDescriptions": {
@@ -938,10 +929,10 @@
 												"typeString": "address"
 											},
 											"typeName": {
-												"id": 42,
+												"id": 41,
 												"name": "address",
 												"nodeType": "ElementaryTypeName",
-												"src": "2141:7:0",
+												"src": "2084:7:0",
 												"stateMutability": "nonpayable",
 												"typeDescriptions": {
 													"typeIdentifier": "t_address",
@@ -952,13 +943,13 @@
 										},
 										{
 											"constant": false,
-											"id": 45,
+											"id": 44,
 											"mutability": "mutable",
 											"name": "quantity",
-											"nameLocation": "2228:8:0",
+											"nameLocation": "2176:8:0",
 											"nodeType": "VariableDeclaration",
-											"scope": 52,
-											"src": "2223:13:0",
+											"scope": 49,
+											"src": "2171:13:0",
 											"stateVariable": false,
 											"storageLocation": "default",
 											"typeDescriptions": {
@@ -966,10 +957,10 @@
 												"typeString": "uint256"
 											},
 											"typeName": {
-												"id": 44,
+												"id": 43,
 												"name": "uint",
 												"nodeType": "ElementaryTypeName",
-												"src": "2223:4:0",
+												"src": "2171:4:0",
 												"typeDescriptions": {
 													"typeIdentifier": "t_uint256",
 													"typeString": "uint256"
@@ -979,13 +970,13 @@
 										},
 										{
 											"constant": false,
-											"id": 47,
+											"id": 46,
 											"mutability": "mutable",
-											"name": "hash",
-											"nameLocation": "2334:4:0",
+											"name": "hash_rnd_number",
+											"nameLocation": "2286:15:0",
 											"nodeType": "VariableDeclaration",
-											"scope": 52,
-											"src": "2326:12:0",
+											"scope": 49,
+											"src": "2278:23:0",
 											"stateVariable": false,
 											"storageLocation": "default",
 											"typeDescriptions": {
@@ -993,10 +984,10 @@
 												"typeString": "bytes32"
 											},
 											"typeName": {
-												"id": 46,
+												"id": 45,
 												"name": "bytes32",
 												"nodeType": "ElementaryTypeName",
-												"src": "2326:7:0",
+												"src": "2278:7:0",
 												"typeDescriptions": {
 													"typeIdentifier": "t_bytes32",
 													"typeString": "bytes32"
@@ -1006,13 +997,13 @@
 										},
 										{
 											"constant": false,
-											"id": 49,
+											"id": 48,
 											"mutability": "mutable",
 											"name": "revealed",
-											"nameLocation": "2434:8:0",
+											"nameLocation": "2391:8:0",
 											"nodeType": "VariableDeclaration",
-											"scope": 52,
-											"src": "2429:13:0",
+											"scope": 49,
+											"src": "2386:13:0",
 											"stateVariable": false,
 											"storageLocation": "default",
 											"typeDescriptions": {
@@ -1020,37 +1011,10 @@
 												"typeString": "bool"
 											},
 											"typeName": {
-												"id": 48,
+												"id": 47,
 												"name": "bool",
 												"nodeType": "ElementaryTypeName",
-												"src": "2429:4:0",
-												"typeDescriptions": {
-													"typeIdentifier": "t_bool",
-													"typeString": "bool"
-												}
-											},
-											"visibility": "internal"
-										},
-										{
-											"constant": false,
-											"id": 51,
-											"mutability": "mutable",
-											"name": "redeemed",
-											"nameLocation": "2530:8:0",
-											"nodeType": "VariableDeclaration",
-											"scope": 52,
-											"src": "2525:13:0",
-											"stateVariable": false,
-											"storageLocation": "default",
-											"typeDescriptions": {
-												"typeIdentifier": "t_bool",
-												"typeString": "bool"
-											},
-											"typeName": {
-												"id": 50,
-												"name": "bool",
-												"nodeType": "ElementaryTypeName",
-												"src": "2525:4:0",
+												"src": "2386:4:0",
 												"typeDescriptions": {
 													"typeIdentifier": "t_bool",
 													"typeString": "bool"
@@ -1059,21 +1023,21 @@
 											"visibility": "internal"
 										}
 									],
-									"name": "Ticket",
-									"nameLocation": "2123:6:0",
+									"name": "TicketInfo",
+									"nameLocation": "2063:10:0",
 									"nodeType": "StructDefinition",
-									"scope": 53,
-									"src": "2116:478:0",
+									"scope": 50,
+									"src": "2056:428:0",
 									"visibility": "public"
 								}
 							],
-							"scope": 54,
-							"src": "354:2247:0",
+							"scope": 51,
+							"src": "348:2138:0",
 							"usedErrors": [],
 							"usedEvents": []
 						}
 					],
-					"src": "33:2570:0"
+					"src": "32:2455:0"
 				},
 				"id": 0
 			}
