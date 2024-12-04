@@ -349,6 +349,25 @@
 						"type": "uint256"
 					}
 				],
+				"name": "getLotteryState",
+				"outputs": [
+					{
+						"internalType": "enum LotteryStructs.LotteryState",
+						"name": "state",
+						"type": "uint8"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "lottery_no",
+						"type": "uint256"
+					}
+				],
 				"name": "getLotteryURL",
 				"outputs": [
 					{
@@ -707,11 +726,11 @@
 			]
 		},
 		"contracts/UpdatedContact/CompanyLotteries.sol": {
-			"keccak256": "0xdeae6f56bf6deb286057fbc37f0d9529ae1895f0b8b295a08e85de0df6060635",
+			"keccak256": "0xb7c7dfd88e26908a5b6db1fdd038c87d77d3109a4ebbad034c54c480294e24e9",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://bb1af96a450ab6d9edd07723ce5d8c39402582c0d640e96248db866efc151697",
-				"dweb:/ipfs/QmXuPBigArgWeYj1D13YTy471nF1L35RFTYuiW9YbHqokN"
+				"bzz-raw://e373ae17a2d9302404b5fe9ddef8061c0bbc207936f83e3ad6bee33dac89f825",
+				"dweb:/ipfs/QmYCS39pE2Se7rvjktpx7QCoY7xj5Ao4saXnYVwN7jiyRA"
 			]
 		},
 		"contracts/UpdatedContact/LotteryStructs.sol": {
