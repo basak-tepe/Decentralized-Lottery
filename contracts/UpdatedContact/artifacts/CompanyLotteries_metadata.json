@@ -638,11 +638,11 @@
 			]
 		},
 		"contracts/UpdatedContact/CompanyLotteries.sol": {
-			"keccak256": "0x03df0b4983c7913ba47d7ecee553766d3105ccabee2858e12e00da8a74885462",
+			"keccak256": "0x66b0d11ea94ff185efb8535a9054be6d5173ff26f20f67305f7341f785653ecc",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://a723395ef6d8c444c1c46371a4a297135ef2dc076573ca76d8522996b95ad54d",
-				"dweb:/ipfs/QmWL8H3EyBYAfVuVDS5TJhMnR1L1bNNzionBhEMYRPJvDt"
+				"bzz-raw://4d51e73da5717341bd9445e36b52cde6fda3b9da17c0faee379c9d1f9c32f023",
+				"dweb:/ipfs/QmZWwtdjjGH1W7U3ExtKrBnXB3JBEm7AosUjuRHHAVq5AF"
 			]
 		},
 		"contracts/UpdatedContact/LotteryStructs.sol": {

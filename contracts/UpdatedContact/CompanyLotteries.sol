@@ -122,6 +122,10 @@ contract CompanyLotteries {
             "Lottery sale is done"
         );
         require(
+            quantity <= 30,
+            "You can purchase at most 30 tickets. "
+        );
+        require(
             lotteries[arrayIndex].numsold + quantity <= lotteries[arrayIndex].nooftickets,
             "Not enough tickets available"
         );
@@ -172,10 +176,10 @@ contract CompanyLotteries {
         );
         // Ensure the ticket hasn't been revealed already
         require(!lotteryTickets[lottery_no][sticketno].revealed, "Ticket already revealed");
-
         // Verify that hash of provided rnd_number matches the committed hash
+        bytes32 hash_rnd_number = keccak256(abi.encodePacked(rnd_number));
         require(
-            (lotteryTickets[lottery_no][sticketno].hash == keccak256(abi.encodePacked(rnd_number, msg.sender))),
+            (lotteryTickets[lottery_no][sticketno].hash == keccak256(abi.encodePacked(hash_rnd_number, msg.sender))),
             "You revealed a wrong number, make sure to reveal the number you submitted"
         );
         lotteryTickets[lottery_no][sticketno].revealed = true;
@@ -223,7 +227,8 @@ contract CompanyLotteries {
         // Adjust lottery array index
         uint arrayIndex = lottery_no-1;  
         require(lottery_no <= currentLotteryNo, "Invalid lottery number");
-         require(
+    
+        require(
             lotteries[arrayIndex].state == LotteryStructs.LotteryState.COMPLETED,
             "Lottery is not COMPLETED state"
         );
@@ -232,9 +237,15 @@ contract CompanyLotteries {
             ticket_no < lotteryTickets[lottery_no].length,
             "Invalid ticket number"
         );
+
         LotteryStructs.Ticket storage ticket = lotteryTickets[lottery_no][ticket_no];
         // Verify that the caller owns the ticket
         require(ticket.owner == msg.sender, "You do not own this ticket");
+        require(
+            ticket.revealed == true ,
+            "You did not submitted your random number correctly in the reveal stage! The chance of winning is lost. "
+        );
+
         // Check if ticketNo is in the list of winners for the lottery
         for (uint256 i = 0; i < lotteries[arrayIndex].lotteryWinners.length;i++) {
             if (lotteries[arrayIndex].lotteryWinners[i] == ticket_no) {
@@ -256,17 +267,19 @@ contract CompanyLotteries {
         // Adjust lottery array index
         uint arrayIndex = lottery_no-1;  
         require(lottery_no <= currentLotteryNo, "Invalid lottery number");
-        require(ticket_no < lotteryTickets[lottery_no].length,"Invalid ticket number");
+        require(ticket_no <= lotteryTickets[lottery_no].length,"Invalid ticket number");
 
-        LotteryStructs.Ticket storage ticket = lotteryTickets[lottery_no][ticket_no];
-
-        // Verify that the ticket belongs to the specified address
-        require(ticket.owner == addr, "The specified address does not own this ticket");
-
+        require(
+            lotteryTickets[lottery_no][ticket_no].revealed == true ,
+            "The address was not submitted its random number correctly in the reveal stage! The chance of winning is lost. "
+        );
         // Check if ticketNo is in the list of winners for the lottery
         for (uint256 i = 0; i < lotteries[lottery_no].lotteryWinners.length;i++) {
             if (lotteries[arrayIndex].lotteryWinners[i] == ticket_no) {
-                return true;
+                LotteryStructs.Ticket storage ticket = lotteryTickets[lottery_no][ticket_no];
+                if (ticket.owner == addr) {
+                    return true;
+                }
             }
         }
         return false;
@@ -298,22 +311,22 @@ contract CompanyLotteries {
 }
 
     /*
-    Allows a ticket owner to withdraw a refund if the lottery was canceled or failed to meet its minimum ticket sales requirement.
+    Allows a ticket owner to withdraw a refund if the lottery was canceled and tthe owner reveals its random number in the reveal stage.
     @param lottery_no The ID of the lottery.
     @param sticket_no The ticket number for which the refund is being claimed.
     */
     function withdrawTicketRefund(uint lottery_no, uint sticket_no) public {
         require(lottery_no > 0,"Lottery number cannot be zero!" );
         // Adjust lottery array index
-        uint arrayIndex = lottery_no-1;       
+        uint arrayIndex = lottery_no-1;    
+
         require(lottery_no <= currentLotteryNo, "Invalid lottery number");
+
         LotteryStructs.Lottery storage lottery = lotteries[arrayIndex];
+
         // Ensure the lottery is in a refundable state
         require(
-            lottery.state == LotteryStructs.LotteryState.CANCELLED || 
-            (lottery.state != LotteryStructs.LotteryState.COMPLETED && 
-            block.timestamp > lottery.unixbeg && 
-            lottery.numsold < (lottery.nooftickets * lottery.minpercentage) / 100),
+            lottery.state == LotteryStructs.LotteryState.CANCELLED ,
             "Refunds not available for this lottery"
         );
 
@@ -321,8 +334,16 @@ contract CompanyLotteries {
 
         // Ensure the caller owns the ticket
         require(lotteryTickets[lottery_no][sticket_no].owner == msg.sender, "Caller is not the owner of this ticket");
+
+        // Ensure the caller reveals its random number at reveal stage
+        require(
+            lotteryTickets[lottery_no][sticket_no].revealed == true, 
+            "You did not submitted your random number correctly in the reveal stage! The refund right is lost. "
+            );
+
         // Ensure the ticket hasn't been refunded already
         require(!lotteryTickets[lottery_no][sticket_no].redeemed, "Ticket already refunded");
+
         // Calculate refund amount
         uint256 refundAmount = lotteryTickets[lottery_no][sticket_no].quantity * lottery.ticketprice;
         // Mark the ticket as redeemed
@@ -361,7 +382,7 @@ contract CompanyLotteries {
         // Calculate the total ticket sales proceeds
         uint256 totalProceeds = lottery.numsold * lottery.ticketprice;
 
-        // Ensure the contract has sufficient funds (assuming ticket sales are in ERC20 tokens)
+        // Ensure the contract has sufficient funds
         uint256 contractBalance = ticketToken.balanceOf(address(this));
         require(contractBalance >= totalProceeds, "Insufficient funds in contract");
 
@@ -409,8 +430,7 @@ contract CompanyLotteries {
             uint256 minpercentage,
             uint256 ticketprice
         )
-    {
-     
+    {    
         // Ensure the lottery exists
         require(lottery_no <= currentLotteryNo, "Invalid lottery number");
         require(lottery_no > 0,"Lottery number cannot be zero!" );
