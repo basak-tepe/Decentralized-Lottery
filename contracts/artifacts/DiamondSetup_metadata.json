@@ -1,0 +1,72 @@
+{
+	"compiler": {
+		"version": "0.8.26+commit.8a97fa7a"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "diamondAddress",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "lotteryManagementFacet",
+						"type": "address"
+					}
+				],
+				"name": "setupDiamond",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/DiamondSetup.sol": "DiamondSetup"
+		},
+		"evmVersion": "cancun",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"contracts/DiamondSetup.sol": {
+			"keccak256": "0x3613bf0bae4af7d4c4deb9fe121068fbe328c1150a2ff41cbcc3a5a3acb296f9",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://f2f40e63938af69bbde833cc1b51078a593bd744ba36ad31af2b834df703f290",
+				"dweb:/ipfs/QmYn1Hdc8NZS5pTZgSc7dan3qy13pQo3THUrGpTaBVDY4D"
+			]
+		},
+		"contracts/interfaces/IDiamondCut.sol": {
+			"keccak256": "0x9c5142860fa531063649e0edfc40a49a4bf119b95eb5b9e8e4666fa4388752b0",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://44e27a0ad01390c2be8a9c71dbf92ce3d93bcd20e9b25d5ea7cac8c32b044227",
+				"dweb:/ipfs/QmSiH2YsE3D3UtXYUsoD7yLntYkXBJ8zN8to52Zt6UyGKp"
+			]
+		}
+	},
+	"version": 1
+}
