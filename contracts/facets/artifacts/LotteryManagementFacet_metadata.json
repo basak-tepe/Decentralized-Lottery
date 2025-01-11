@@ -1,0 +1,443 @@
+{
+	"compiler": {
+		"version": "0.8.26+commit.8a97fa7a"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "lottery_no",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "unixbeg",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "nooftickets",
+						"type": "uint256"
+					}
+				],
+				"name": "LotteryCreated",
+				"type": "event"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "unixbeg",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "nooftickets",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "noofwinners",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "minpercentage",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "ticketprice",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "htmlhash",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "string",
+						"name": "url",
+						"type": "string"
+					}
+				],
+				"name": "createLottery",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "lottery_no",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "i",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "lottery_no",
+						"type": "uint256"
+					}
+				],
+				"name": "getIthPurchasedTicketTx",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "sticketno",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "quantity",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "lottery_no",
+						"type": "uint256"
+					}
+				],
+				"name": "getLotteryInfo",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "unixbeg",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "nooftickets",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "noofwinners",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "minpercentage",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "ticketprice",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "lottery_no",
+						"type": "uint256"
+					}
+				],
+				"name": "getLotterySales",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "numsold",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "lottery_no",
+						"type": "uint256"
+					}
+				],
+				"name": "getLotteryState",
+				"outputs": [
+					{
+						"internalType": "enum LotteryStructs.LotteryState",
+						"name": "",
+						"type": "uint8"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "lottery_no",
+						"type": "uint256"
+					}
+				],
+				"name": "getLotteryURL",
+				"outputs": [
+					{
+						"internalType": "bytes32",
+						"name": "htmlhash",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "string",
+						"name": "url",
+						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "lottery_no",
+						"type": "uint256"
+					}
+				],
+				"name": "getNumPurchaseTxs",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "numpurchasetxs",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "updateLotteryStates",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"events": {
+				"LotteryCreated(uint256,uint256,uint256)": {
+					"params": {
+						"lottery_no": "The ID of the lottery.",
+						"nooftickets": "Number of tickets lottery has.",
+						"unixbeg": "Time"
+					}
+				}
+			},
+			"kind": "dev",
+			"methods": {
+				"createLottery(uint256,uint256,uint256,uint256,uint256,bytes32,string)": {
+					"params": {
+						"htmlhash": "The hash of the HTML content related to the lottery.",
+						"minpercentage": "The minimum percentage of tickets that must be sold for the lottery to be valid.",
+						"nooftickets": "The total number of tickets available for the lottery.",
+						"noofwinners": "The number of winners to select for the lottery.",
+						"ticketprice": "The price of each ticket (in the payment token).",
+						"unixbeg": "The start time of the lottery (in Unix timestamp).",
+						"url": "The URL for more details about the lottery."
+					}
+				},
+				"getIthPurchasedTicketTx(uint256,uint256)": {
+					"params": {
+						"i": "Ticket index number (starts with 1 as first)",
+						"lottery_no": "lottery number which the ticket is in"
+					},
+					"returns": {
+						"quantity": "Quantity of tickets sold",
+						"sticketno": "Sold ticket no"
+					}
+				},
+				"getLotteryInfo(uint256)": {
+					"params": {
+						"lottery_no": "The ID of the lottery whose information is being requested"
+					},
+					"returns": {
+						"minpercentage": "Minimum percentage of tickets to be sold for the lottery to be valid",
+						"nooftickets": "Total number of tickets in the lottery",
+						"noofwinners": "Number of winners to be selected",
+						"ticketprice": "Price of each ticket (in the NBG Token)",
+						"unixbeg": "Start time of the lottery (in Unix timestamp)"
+					}
+				},
+				"getLotterySales(uint256)": {
+					"params": {
+						"lottery_no": "Lottery ID which is used to retrieve information about its state and sold tickets"
+					},
+					"returns": {
+						"numsold": "Number of purchased tickets in that particular lottery"
+					}
+				},
+				"getLotteryState(uint256)": {
+					"params": {
+						"lottery_no": "The ID of the lottery."
+					},
+					"returns": {
+						"_0": "The state of the lottery."
+					}
+				},
+				"getNumPurchaseTxs(uint256)": {
+					"params": {
+						"lottery_no": "Lottery ID which is used to retrieve information about its transactions."
+					},
+					"returns": {
+						"numpurchasetxs": "Number of transactions"
+					}
+				}
+			},
+			"version": 1
+		},
+		"userdoc": {
+			"events": {
+				"LotteryCreated(uint256,uint256,uint256)": {
+					"notice": "Event emitted when lottery is created."
+				}
+			},
+			"kind": "user",
+			"methods": {
+				"createLottery(uint256,uint256,uint256,uint256,uint256,bytes32,string)": {
+					"notice": "Creates a new lottery with the given parameters."
+				},
+				"getIthPurchasedTicketTx(uint256,uint256)": {
+					"notice": "View function to get information of a ticket. Allows anyone to view the quantity of tickets purchased in the Ith transaction for a specified lottery"
+				},
+				"getLotteryInfo(uint256)": {
+					"notice": "Retrieves the essential information about a specific lottery."
+				},
+				"getLotterySales(uint256)": {
+					"notice": "Retrieves the number of ticket sold for a specific lottery."
+				},
+				"getLotteryState(uint256)": {
+					"notice": "Retrieves the state of a specific lottery."
+				},
+				"getNumPurchaseTxs(uint256)": {
+					"notice": "Retrieves the number of purchase Transactions a specific lottery."
+				},
+				"updateLotteryStates()": {
+					"notice": "Updates the states of all lotteries based on current conditions. Transitions include: - PURCHASE ➔ REVEAL if revealStartTime is reached. - REVEAL ➔ COMPLETED if unixbeg is reached and minimum tickets are sold. - Any state ➔ CANCELLED if unixbeg is reached and minimum tickets are not sold."
+				}
+			},
+			"notice": "LotteryManagementFacet Facet responsible for managing lotteries in a Diamond architecture.",
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/facets/LotteryManagementFacet.sol": "LotteryManagementFacet"
+		},
+		"evmVersion": "cancun",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"@openzeppelin/contracts/interfaces/draft-IERC6093.sol": {
+			"keccak256": "0x880da465c203cec76b10d72dbd87c80f387df4102274f23eea1f9c9b0918792b",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://399594cd8bb0143bc9e55e0f1d071d0d8c850a394fb7a319d50edd55d9ed822b",
+				"dweb:/ipfs/QmbPZzgtT6LEm9CMqWfagQFwETbV1ztpECBB1DtQHrKiRz"
+			]
+		},
+		"@openzeppelin/contracts/token/ERC20/ERC20.sol": {
+			"keccak256": "0xbf61ab2ae1d575a17ea58fbb99ca232baddcc4e0eeea180e84cbc74b0c348b31",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://4e0968705bad99747a8e5288aa008678c2be2f471f919dce3925a3cc4f1dee09",
+				"dweb:/ipfs/QmbAFnCQfo4tw6ssfQSjhA5LzwHWNNryXN8bX7ty8jiqqn"
+			]
+		},
+		"@openzeppelin/contracts/token/ERC20/IERC20.sol": {
+			"keccak256": "0xe06a3f08a987af6ad2e1c1e774405d4fe08f1694b67517438b467cecf0da0ef7",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://df6f0c459663c9858b6cba2cda1d14a7d05a985bed6d2de72bd8e78c25ee79db",
+				"dweb:/ipfs/QmeTTxZ7qVk9rjEv2R4CpCwdf8UMCcRqDNMvzNxHc3Fnn9"
+			]
+		},
+		"@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol": {
+			"keccak256": "0x70f2f713b13b7ce4610bcd0ac9fec0f3cc43693b043abcb8dc40a42a726eb330",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://c13d13304ac79a83ab1c30168967d19e2203342ebbd6a9bbce4db7550522dcbf",
+				"dweb:/ipfs/QmeN5jKMN2vw5bhacr6tkg78afbTTZUeaacNHqjWt4Ew1r"
+			]
+		},
+		"@openzeppelin/contracts/utils/Context.sol": {
+			"keccak256": "0x493033a8d1b176a037b2cc6a04dad01a5c157722049bbecf632ca876224dd4b2",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://6a708e8a5bdb1011c2c381c9a5cfd8a9a956d7d0a9dc1bd8bcdaf52f76ef2f12",
+				"dweb:/ipfs/Qmax9WHBnVsZP46ZxEMNRQpLQnrdE4dK8LehML1Py8FowF"
+			]
+		},
+		"contracts/TicketToken.sol": {
+			"keccak256": "0xc65ec21219c5a7181e81a2f10b7c15995a9da8c8c1375fb0887d3ba93f00f380",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://fcd405fee615c0be358e7e03d884105047046830dc2fd835c3c4d82ba5951e75",
+				"dweb:/ipfs/QmbbGCSj5TxvD26FQuKWwVi6R8Ja8jVsWuR7nvFQrWir4F"
+			]
+		},
+		"contracts/facets/AccessControlFacet.sol": {
+			"keccak256": "0x87cd88e0fb83cfc1433cb6eab07f8dd9c94c4f5561a5a82b9d1e7bc954122e7a",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://774e0a759f260b7af3b0575953d0d4719742b78161aa5d4c1c1c3063aab23f2e",
+				"dweb:/ipfs/QmPVjXCHq66XsSKwnZhMyRz2y1bbNCmZDSPMbupN9PEThU"
+			]
+		},
+		"contracts/facets/LotteryManagementFacet.sol": {
+			"keccak256": "0xb8c1e02696ab65d7f341418b27bb5810b294f0b8d9ce43e889d74d53405c7d08",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://703c60bb4239d65afb700d6e10e8f2cab5239efdcf39f3411517fd825d4b3c20",
+				"dweb:/ipfs/QmbzTZPxbjnSjSnHKP8dKWp3oW3gc4vg8xmmF6C9Ls2mZm"
+			]
+		},
+		"contracts/libraries/LotteryStorage.sol": {
+			"keccak256": "0xd0680470bf701d4a9997d4a5520caaad2dc72be255b9d7d4fd9474685bf3db35",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://2e097065041e09e6cc8e63f8d8e13568af81044a0595f5dcfe2a50d5245af7a7",
+				"dweb:/ipfs/QmY6WsLYL9ahXAdXGyeoFVWH5Ksj3PkLE4viETZ9wFMbcz"
+			]
+		},
+		"contracts/libraries/LotteryStructs.sol": {
+			"keccak256": "0x140609829492316b9e9b5ae770e27ba05c30644099befdd66ce046833d6d707f",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://deec08077f2f970576fdefe795280f70e4859e2336e0e8830919ff4e647b137c",
+				"dweb:/ipfs/Qmaqw2AXL5XyVdPouV64UYHgMuKjkF8HVXMB7y1gdgiqeY"
+			]
+		}
+	},
+	"version": 1
+}

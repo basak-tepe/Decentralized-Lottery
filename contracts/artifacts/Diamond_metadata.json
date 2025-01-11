@@ -1,0 +1,98 @@
+{
+	"compiler": {
+		"version": "0.8.26+commit.8a97fa7a"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_diamondCutFacet",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_lotteryManagementFacet",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_paymentFacet",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_ticketManagementFacet",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_winnerDeterminationFacet",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_accessControlFacet",
+						"type": "address"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"stateMutability": "payable",
+				"type": "fallback"
+			},
+			{
+				"stateMutability": "payable",
+				"type": "receive"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/Diamond.sol": "Diamond"
+		},
+		"evmVersion": "cancun",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"contracts/Diamond.sol": {
+			"keccak256": "0x37d12c0a023cc68afde787e2f63023198ef6b6dc5a21aec1e70e52dcfba6d148",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://aa46be891f70b56d97eecc37b6b3624e9f3628ff03c73cac6f3e06c624ab3324",
+				"dweb:/ipfs/QmcCdKWArdd7sKwEGxq2WBFr5iJn8BGTF3yr42QfzhCPao"
+			]
+		},
+		"contracts/libraries/DiamondStorage.sol": {
+			"keccak256": "0xfa63d360e514d988ae737210946e1088bd8c5917a5b3c1853f9e912396c03c81",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://759f301919e215f9d96dd1031f9f1782a294ae3478266ab6ffd6b94bf40f8b45",
+				"dweb:/ipfs/QmbKbBUnQVLNpcEjMMMs19H8LvbPoYjiA3iW5eiKbMrqix"
+			]
+		}
+	},
+	"version": 1
+}
