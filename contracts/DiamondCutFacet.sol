@@ -5,63 +5,13 @@ import "./interfaces/IDiamondCut.sol";
 import "./libraries/DiamondStorage.sol";
 
 contract DiamondCutFacet is IDiamondCut {
-    /// @notice Implements the `diamondCut` function to manage facets.
-    function diamondCut(
-        FacetCut[] calldata _diamondCut,
-        address _init,
-        bytes calldata _calldata
-    ) external override {
+    function diamondCut(FacetCut[] calldata _diamondCut) external override {
         DiamondStorage.DiamondStorageStruct storage ds = DiamondStorage.diamondStorage();
-
         for (uint256 i = 0; i < _diamondCut.length; i++) {
-            FacetCut memory cut = _diamondCut[i];
-            if (cut.action == FacetCutAction.Add) {
-                addFunctions(cut.facetAddress, cut.functionSelectors, ds);
-            } else if (cut.action == FacetCutAction.Replace) {
-                replaceFunctions(cut.facetAddress, cut.functionSelectors, ds);
-            } else if (cut.action == FacetCutAction.Remove) {
-                removeFunctions(cut.functionSelectors, ds);
-            } else {
-                revert("DiamondCutFacet: Invalid FacetCutAction");
+            address facet = _diamondCut[i].facetAddress;
+            for (uint256 j = 0; j < _diamondCut[i].functionSelectors.length; j++) {
+                ds.facets[_diamondCut[i].functionSelectors[j]] = facet;
             }
-        }
-
-        emit DiamondCut(_diamondCut, _init, _calldata);
-
-        // Call initialization function, if specified
-        if (_init != address(0)) {
-            require(_calldata.length > 0, "DiamondCutFacet: _calldata is empty but _init is set");
-            (bool success, ) = _init.delegatecall(_calldata);
-            require(success, "DiamondCutFacet: Initialization function failed");
-        }
-    }
-
-    /// @notice Add new functions to the diamond.
-    function addFunctions(address _facetAddress, bytes4[] memory _functionSelectors, DiamondStorage.DiamondStorageStruct storage ds) internal {
-        require(_facetAddress != address(0), "DiamondCutFacet: Facet address cannot be zero");
-        for (uint256 i = 0; i < _functionSelectors.length; i++) {
-            bytes4 selector = _functionSelectors[i];
-            require(ds.facets[selector] == address(0), "DiamondCutFacet: Function already exists");
-            ds.facets[selector] = _facetAddress;
-        }
-    }
-
-    /// @notice Replace existing functions in the diamond.
-    function replaceFunctions(address _facetAddress, bytes4[] memory _functionSelectors, DiamondStorage.DiamondStorageStruct storage ds) internal {
-        require(_facetAddress != address(0), "DiamondCutFacet: Facet address cannot be zero");
-        for (uint256 i = 0; i < _functionSelectors.length; i++) {
-            bytes4 selector = _functionSelectors[i];
-            require(ds.facets[selector] != address(0), "DiamondCutFacet: Function does not exist");
-            ds.facets[selector] = _facetAddress;
-        }
-    }
-
-    /// @notice Remove functions from the diamond.
-    function removeFunctions(bytes4[] memory _functionSelectors, DiamondStorage.DiamondStorageStruct storage ds) internal {
-        for (uint256 i = 0; i < _functionSelectors.length; i++) {
-            bytes4 selector = _functionSelectors[i];
-            require(ds.facets[selector] != address(0), "DiamondCutFacet: Function does not exist");
-            ds.facets[selector] = address(0);
         }
     }
 }
