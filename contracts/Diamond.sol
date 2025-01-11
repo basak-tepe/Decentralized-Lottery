@@ -22,7 +22,6 @@ contract Diamond {
         _addFacet(_ticketManagementFacet, _getTicketManagementSelectors());
         _addFacet(_winnerDeterminationFacet, _getWinnerDeterminationSelectors());
         _addFacet(_accessControlFacet, _getAccessControlSelectors());
-        
     }
 
     // Add facet functions
@@ -39,7 +38,7 @@ contract Diamond {
     }
 
     function _getLotteryManagementSelectors() internal pure returns (bytes4[] memory selectors) {
-        selectors = new bytes4[](1);
+        selectors = new bytes4[](8);
         selectors[0] = bytes4(keccak256("createLottery(uint,uint,uint,uint,uint,bytes32,string)"));
         selectors[1] = bytes4(keccak256("getLotteryInfo(uint256)"));
         selectors[2] = bytes4(keccak256("getLotteryState(uint256)"));
